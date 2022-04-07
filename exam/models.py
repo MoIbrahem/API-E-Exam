@@ -10,3 +10,4 @@ from model_utils.managers import InheritanceManager
 
 #trial
 #new try
+#new line
