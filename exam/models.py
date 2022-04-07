@@ -8,9 +8,3 @@ from model_utils.managers import InheritanceManager
 # Create your models here.
 # Ramadan Kareem
 
-#trial
-#new try
-#new line
-#3rd try
-#final
-#lastone
