@@ -12,3 +12,4 @@ from model_utils.managers import InheritanceManager
 #new try
 #new line
 #3rd try
+#final
