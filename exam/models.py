@@ -12,8 +12,5 @@ from model_utils.managers import InheritanceManager
 #new try
 #new line
 #3rd try
-<<<<<<< HEAD
 #final
-=======
 #lastone
->>>>>>> 10f36a0ee1232a9eb87c48853a5b96f022c15a4d
