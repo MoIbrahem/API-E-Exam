@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure-=d3bt%xpyorn27t9fh+-t3wp=t)4-k!(2a7@!^arh*nu%lp^y$
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'storefront3',
+        'NAME': 'apiexam',
         'HOST': 'localhost',
         'USER': 'root',
         'PASSWORD': ''
