@@ -43,9 +43,20 @@ class Chapter(models.Model):
 
 
 class Question(models.Model):
+    DEFICULTY_EASY = 'E'
+    DEFICULTY_MEDIUM = 'M'
+    DEFICULTY_HARD = 'H'
+
+    DEFICULTY_CHOICES = [
+        (DEFICULTY_EASY, 'Easy'),
+        (DEFICULTY_MEDIUM, 'Medium'),
+        (DEFICULTY_HARD, 'Hard'),
+    ]
+
     title = models.CharField(max_length=255)
     chapter = models.ForeignKey(Chapter, on_delete=models.PROTECT)
-
+    deficulty = models.CharField(
+        max_length=1, choices=DEFICULTY_CHOICES, default=DEFICULTY_MEDIUM)
     def __str__(self) -> str:
         return self.title
 
@@ -79,3 +90,8 @@ class Subject(models.Model):
 
     class Meta:
         ordering = ['title']
+
+class RightAnswer(models.Model):
+    questions = models.ForeignKey(Question, on_delete=models.PROTECT)
+    answers = models.ManyToManyField(Answer, on_delete=models.PROTECT)
+
