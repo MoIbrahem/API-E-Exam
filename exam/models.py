@@ -112,7 +112,7 @@ class Person(models.Model):
         ordering = ['user__first_name', 'user__last_name']
 
 class Student(Person):
-    #results = models.OneToManyField(Result, on_delete=models.CASCADE)
+    #results = models.ForeignKey(Result)
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
     class Meta:
