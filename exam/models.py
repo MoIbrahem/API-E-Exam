@@ -1,13 +1,16 @@
-from importlib.util import decode_source
 from django.contrib import admin
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from uuid import uuid4
 from model_utils.managers import InheritanceManager
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 # Ramadan Kareem
+
+class User(AbstractUser):
+  email = models.EmailField(unique=True)
 
 class Level(models.Model):
     title = models.CharField(max_length=255)
@@ -91,7 +94,6 @@ class Subject(models.Model):
     class Meta:
         ordering = ['title']
 
-<<<<<<< HEAD
 class Person(models.Model):
     phone = models.CharField(max_length=255)
     birth_date = models.DateField(null=True, blank=True)
@@ -105,6 +107,9 @@ class Person(models.Model):
     @admin.display(ordering='user__last_name')
     def last_name(self):
         return self.user.last_name
+    
+    class Meta:
+        ordering = ['user__first_name', 'user__last_name']
 
 class Student(Person):
     #results = models.OneToManyField(Result, on_delete=models.CASCADE)
@@ -120,9 +125,7 @@ class Professor(Person):
     class Meta:
         ordering = ['user__first_name', 'user__last_name']
         
-=======
 class RightAnswer(models.Model):
     questions = models.ForeignKey(Question, on_delete=models.PROTECT)
     answers = models.ManyToManyField(Answer, on_delete=models.PROTECT)
 
->>>>>>> 76f833dc6a4a95a454300c7ddff6d80674e4fe87
