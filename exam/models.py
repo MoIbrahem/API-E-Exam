@@ -39,7 +39,7 @@ class Subject(models.Model):
     description = models.TextField(null=True, blank=True)
     hours = models.IntegerField(validators=[MinValueValidator(1)])
     level = models.ForeignKey(Level, on_delete=models.PROTECT)
-    departments = models.ManyToManyField(Department, on_delete=models.PROTECT)
+    departments = models.ManyToManyField(Department)
 
     
     def __str__(self) -> str:
@@ -109,7 +109,15 @@ class Type(models.Model):
     class Meta:
         ordering = ['title']
 
+class Answer(models.Model):
+    title = models.CharField(max_length=255)
+    
 
+    def __str__(self) -> str:
+        return self.title
+
+    class Meta:
+        ordering = ['title']
 
 class Question(models.Model):
     
@@ -118,6 +126,7 @@ class Question(models.Model):
     difficulty = models.ForeignKey(Difficulty, on_delete=models.PROTECT)
     type = models.ForeignKey(Type, on_delete=models.PROTECT)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    answer = models.ManyToManyField(Answer)
     
     def __str__(self) -> str:
         return self.title
@@ -127,22 +136,13 @@ class Question(models.Model):
 
 
 
-class Answer(models.Model):
-    title = models.CharField(max_length=255)
-    question = models.ManyToManyField(Question, on_delete=models.PROTECT)
-
-    def __str__(self) -> str:
-        return self.title
-
-    class Meta:
-        ordering = ['title']
 
 class RightAnswer(models.Model):
     questions = models.ForeignKey(Question, on_delete=models.CASCADE)
-    answers = models.ManyToManyField(Answer, on_delete=models.PROTECT)
+    answers = models.ManyToManyField(Answer)
 
-    class Meta:
-        unique_together = [['question', 'answer']]
+    # class Meta:
+    #     unique_together = [['question', 'answer']]
 
 
 
@@ -177,7 +177,7 @@ class Student(Person):
 
 
 class Professor(Person):
-    subjects = models.ManyToManyField(Subject, on_delete=models.PROTECT)
+    subjects = models.ManyToManyField(Subject)
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
     class Meta:
