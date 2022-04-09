@@ -33,6 +33,20 @@ class Department(models.Model):
     class Meta:
         ordering = ['title']
 
+class Subject(models.Model):
+    title = models.CharField(max_length=255)
+    slug = models.SlugField()
+    description = models.TextField(null=True, blank=True)
+    hours = models.IntegerField(validators=[MinValueValidator(1)])
+    level = models.ForeignKey(Level, on_delete=models.PROTECT)
+    departments = models.ManyToManyField(Department, on_delete=models.PROTECT)
+
+    
+    def __str__(self) -> str:
+        return self.title
+
+    class Meta:
+        ordering = ['title']
 
 
 class Chapter(models.Model):
@@ -103,6 +117,7 @@ class Question(models.Model):
     chapter = models.ForeignKey(Chapter, on_delete=models.PROTECT)
     difficulty = models.ForeignKey(Difficulty, on_delete=models.PROTECT)
     type = models.ForeignKey(Type, on_delete=models.PROTECT)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     
     def __str__(self) -> str:
         return self.title
@@ -122,23 +137,16 @@ class Answer(models.Model):
     class Meta:
         ordering = ['title']
 
-
-
-
-class Subject(models.Model):
-    title = models.CharField(max_length=255)
-    slug = models.SlugField()
-    description = models.TextField(null=True, blank=True)
-    hours = models.IntegerField(validators=[MinValueValidator(1)])
-    level = models.ForeignKey(Level, on_delete=models.PROTECT)
-    departments = models.ManyToManyField(Department, on_delete=models.PROTECT)
-
-    
-    def __str__(self) -> str:
-        return self.title
+class RightAnswer(models.Model):
+    questions = models.ForeignKey(Question, on_delete=models.CASCADE)
+    answers = models.ManyToManyField(Answer, on_delete=models.PROTECT)
 
     class Meta:
-        ordering = ['title']
+        unique_together = [['question', 'answer']]
+
+
+
+
 
 
 
@@ -175,9 +183,7 @@ class Professor(Person):
     class Meta:
         ordering = ['user__first_name', 'user__last_name']
         
-class RightAnswer(models.Model):
-    questions = models.ForeignKey(Question, on_delete=models.CASCADE)
-    answers = models.ManyToManyField(Answer, on_delete=models.PROTECT)
+
 
 
 
