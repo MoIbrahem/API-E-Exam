@@ -33,6 +33,8 @@ class Department(models.Model):
     class Meta:
         ordering = ['title']
 
+
+
 class Chapter(models.Model):
     title = models.CharField(max_length=255)
     # question = models.ForeignKey(
@@ -43,6 +45,8 @@ class Chapter(models.Model):
 
     class Meta:
         ordering = ['title']
+
+
 
 class Difficulty(models.Model):
 
@@ -67,6 +71,8 @@ class Difficulty(models.Model):
 
     class Meta:
         ordering = ['title']
+
+
 
 class Type(models.Model):
 
@@ -104,6 +110,8 @@ class Question(models.Model):
     class Meta:
         ordering = ['title']
 
+
+
 class Answer(models.Model):
     title = models.CharField(max_length=255)
     question = models.ManyToManyField(Question, on_delete=models.PROTECT)
@@ -132,6 +140,8 @@ class Subject(models.Model):
     class Meta:
         ordering = ['title']
 
+
+
 class Person(models.Model):
     phone = models.CharField(max_length=255)
     birth_date = models.DateField(null=True, blank=True)
@@ -156,6 +166,8 @@ class Student(Person):
     class Meta:
         ordering = ['user__first_name', 'user__last_name']
 
+
+
 class Professor(Person):
     subjects = models.ManyToManyField(Subject, on_delete=models.PROTECT)
     def __str__(self):
@@ -166,6 +178,8 @@ class Professor(Person):
 class RightAnswer(models.Model):
     questions = models.ForeignKey(Question, on_delete=models.CASCADE)
     answers = models.ManyToManyField(Answer, on_delete=models.PROTECT)
+
+
 
 class Exam(models.Model):
     title = models.CharField(max_length=255)
@@ -180,16 +194,23 @@ class Exam(models.Model):
     class Meta:
         ordering = ['title']
 
+
+
 class ExamQuestion(models.Model):
-    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='questions')
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='chapters')
     difficulty = models.ForeignKey(Difficulty, on_delete=models.CASCADE)
     type = models.ForeignKey(Type, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)])
+    quantity = models.IntegerField(validators=[MinValueValidator(1)])
     
     class Meta:
         unique_together = [['exam', 'chapter','difficulty','type','quantity']]
 
 
-    
+class Result(models.Model):
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='exam')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student')
+    degree = models.IntegerField(validators=[MinValueValidator(0)])
 
+    class Meta:
+        unique_together = [['exam', 'student']]
