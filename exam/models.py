@@ -204,7 +204,7 @@ class ExamQuestion(models.Model):
     quantity = models.IntegerField(validators=[MinValueValidator(1)])
 
     class Meta:
-        unique_together = [['exam', 'chapter', 'difficulty', 'type', 'quantity']]
+        unique_together = [['exam', 'chapter', 'difficulty', 'type']]
 
 
 class Result(models.Model):
