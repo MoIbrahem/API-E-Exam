@@ -78,13 +78,13 @@ class QuestinAdmin(admin.ModelAdmin):
 
 @admin.register(models.Subject)
 class SubjectAdmin(admin.ModelAdmin):
-    list_display = ['title', 'department', 'level', 'hours', 'exams']
+    list_display = ['title', 'department', 'level', 'hours', 'exam', 'question' ]
 
     def department(self, obj):
         return "\n".join([department.title for department in obj.departments.all()])
 
-    @admin.display(ordering='exam_count')
-    def exams(self, subject):
+    @admin.display(ordering=['exam_count', 'question_count'])
+    def exam(self, subject):
         url = (
                 reverse('admin:exam_exam_changelist')
                 + '?'
@@ -92,11 +92,21 @@ class SubjectAdmin(admin.ModelAdmin):
             'subject__id': str(subject.id)
         }))
         return format_html('<a href="{}">{} exams</a>', url, subject.exams_count)
+    
+    def question(self, subject):
+        url = (
+                reverse('admin:exam_question_changelist')
+                + '?'
+                + urlencode({
+            'subject__id': str(subject.id)
+        }))
+        return format_html('<a href="{}">{} questions</a>', url, subject.question_count)
 
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
-            exams_count=Count('exam')
+            exams_count=Count('exam'), question_count=Count('question')
         )
+    
 
 
 class ExamQustionInline(admin.TabularInline):
