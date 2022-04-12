@@ -1,4 +1,6 @@
 # from turtle import title
+from pyexpat import model
+from statistics import mode
 from django.contrib import admin
 from django.conf import settings
 from django.core.validators import MinValueValidator
@@ -157,7 +159,9 @@ class Person(models.Model):
 
 
 class Student(Person):
-    # results = models.ForeignKey(Result)
+    level = models.ForeignKey(Level,on_delete=models.PROTECT, null=True,related_name='student_level')
+    department = models.ForeignKey(Department,on_delete=models.PROTECT, null=True, related_name='student_department')
+
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
 
@@ -169,7 +173,7 @@ class Professor(Person):
     subjects = models.ManyToManyField(Subject)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.user.first_name} {self.user.last_name}'
 
     class Meta:
         ordering = ['user__first_name', 'user__last_name']
@@ -202,7 +206,7 @@ class ExamQuestion(models.Model):
 
 class Result(models.Model):
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='exam')
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='results')
     degree = models.IntegerField(validators=[MinValueValidator(0)])
 
     class Meta:

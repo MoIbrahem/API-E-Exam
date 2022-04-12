@@ -18,28 +18,56 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
 
-
-@admin.register(models.Professor)
-class ProfessorAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'subjects_number']
+@admin.register(models.Person)
+class PersonAdmin(admin.ModelAdmin):
+    list_display = ['__str__']
     search_fields = ['first_name__istartswith', 'last_name__istartswith']
     ordering = ['user__first_name', 'user__last_name']
     list_per_page = 10
+    autocomplete_fields = [ 'user']
 
+
+    
+
+@admin.register(models.Professor)
+class ProfessorAdmin(PersonAdmin):
+    list_display = ['__str__','subjects_number']
+    autocomplete_fields = ['subjects', 'user']
     @admin.display(ordering='subjects_number')
-    def subjects_number(self, professor):
+    def subjects_number(self, person):
         url = (
                 reverse('admin:exam_subject_changelist')
                 + '?'
                 + urlencode({
-            'professor__id': str(professor.id)
+            'person__id': str(person.id)
         }))
-        return format_html('<a href="{}">{} subject </a>', url, professor.subjects_number)
+        return format_html('<a href="{}">{} subject </a>', url, person.subjects_number)
 
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
             subjects_number=Count('subjects')
         )
+    
+@admin.register(models.Student)
+class StudentAdmin(PersonAdmin):
+    list_display = ['__str__','results_number','level','department']
+    autocomplete_fields = ['level', 'user','department']
+
+    @admin.display(ordering='subjects_number')
+    def results_number(self, person):
+        url = (
+                reverse('admin:exam_result_changelist')
+                + '?'
+                + urlencode({
+            'person__id': str(person.id)
+        }))
+        return format_html('<a href="{}">{} results </a>', url, person.results_number)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(
+            results_number=Count('results')
+        )
+    
 
 @admin.register(models.Level)
 class LevelAdmin(admin.ModelAdmin):
@@ -62,18 +90,18 @@ class LevelAdmin(admin.ModelAdmin):
             departments_number=Count('departments')
         )
 
-class FilterByLevel(admin.SimpleListFilter):
-    title = 'level'
-    parameter_name = 'level'
+# class FilterByLevel(admin.SimpleListFilter):
+#     title = 'level'
+#     parameter_name = 'level'
 
-    def lookups(self, request, model_admin):
-        return [
-            ('=1', '1'),
-        ]
+#     def lookups(self, request, model_admin):
+#         return [
+#             ('=1', '1'),
+#         ]
 
-    def queryset(self, request, queryset):
-        if self.value() == '=1':
-            return queryset.filter(id__exact=1)
+#     def queryset(self, request, queryset):
+#         if self.value() == '=1':
+#             return queryset.filter(id__exact=1)
 
 
 
@@ -82,7 +110,8 @@ class FilterByLevel(admin.SimpleListFilter):
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = ['title', 'level']
     search_fields = ['title']
-    list_filter = ['title', FilterByLevel]
+    # list_filter = ['title', FilterByLevel]
+    list_filter = ['title']
     def level(self, obj):
         return "\n".join([level.title for level in obj.levels.all()])
 
@@ -142,7 +171,7 @@ class QuestinAdmin(admin.ModelAdmin):
     list_display = ['title', 'answers', 'chapter', 'subject', 'type', 'difficulty']
     search_fields = ['title','chapter','subject','type','difficulty']
     list_filter = ['subject', 'chapter', 'difficulty', 'type']
-    autocomplete_fields = ['answer']
+    autocomplete_fields = ['answer', 'chapter','subject','type','difficulty']
     def answers(self, obj):
         return "\n".join([answer.title for answer in obj.answer.all()])
 
