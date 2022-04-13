@@ -69,6 +69,7 @@ class LevelAdmin(admin.ModelAdmin):
     list_display = ['title', 'placed_at', 'departments_number']
     search_fields = ['title']
     list_filter = ['title']
+    autocomplete_fields = ['departments']
 
     @admin.display(ordering='departments_number')
     def departments_number(self, level):
@@ -105,6 +106,7 @@ class LevelAdmin(admin.ModelAdmin):
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = ['title', 'level']
     search_fields = ['title']
+    autocomplete_fields = ['levels']
     # list_filter = ['title', FilterByLevel]
     list_filter = ['title']
     def level(self, obj):
