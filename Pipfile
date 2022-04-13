@@ -21,6 +21,7 @@ flower = "*"
 django-redis = "*"
 django-model-utils = "*"
 autopep8 = "*"
+django-guardian = "*"
 
 [dev-packages]
 

@@ -7,14 +7,13 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from uuid import uuid4
 from model_utils.managers import InheritanceManager
-from django.contrib.auth.models import AbstractUser
+
 
 
 # Create your models here.
 # Ramadan Kareem
 
-class User(AbstractUser):
-    email = models.EmailField(unique=True)
+
 
 
 class Level(models.Model):

@@ -5,18 +5,13 @@ from django.db.models.aggregates import Count
 from django.db.models.query import QuerySet
 from django.utils.html import format_html, urlencode
 from django.urls import reverse
+from guardian.admin import GuardedModelAdmin
+from guardian.shortcuts import get_objects_for_user
 from . import models
 
 
 # Register your models here.
-@admin.register(models.User)
-class UserAdmin(BaseUserAdmin):
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2', 'email', 'first_name', 'last_name'),
-        }),
-    )
+
 
 @admin.register(models.Person)
 class PersonAdmin(admin.ModelAdmin):
@@ -47,7 +42,7 @@ class ProfessorAdmin(PersonAdmin):
         return super().get_queryset(request).annotate(
             subjects_number=Count('subjects')
         )
-    
+
 @admin.register(models.Student)
 class StudentAdmin(PersonAdmin):
     list_display = ['__str__','results_number','level','department']
@@ -178,7 +173,10 @@ class QuestinAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.Subject)
-class SubjectAdmin(admin.ModelAdmin):
+class SubjectAdmin(GuardedModelAdmin):
+
+    
+
     list_display = ['title', 'department', 'level', 'professors', 'hours', 'exam', 'question']
     search_fields = ['title']
     list_filter = ['level', 'departments', 'hours']
@@ -214,11 +212,49 @@ class SubjectAdmin(admin.ModelAdmin):
 
 
 
+    # def get_queryset(self, request):
+    #     return super().get_queryset(request).annotate(
+    #         exams_count=Count('exam'), question_count=Count('question')
+    #     )
+
+    def has_module_permission(self, request):
+        if super().has_module_permission(request):
+            return True
+        return self.get_model_objects(request).exists()
+
     def get_queryset(self, request):
-        return super().get_queryset(request).annotate(
+        if request.user.is_superuser:
+             data =super().get_queryset(request)
+        else:
+            data = self.get_model_objects(request)
+        
+        return data.annotate(
             exams_count=Count('exam'), question_count=Count('question')
         )
 
+    def get_model_objects(self, request, action=None, klass=None):
+        opts = self.opts
+        actions = [action] if action else ['view','edit','delete']
+        klass = klass if klass else opts.model
+        model_name = klass._meta.model_name
+        return get_objects_for_user(user=request.user, perms=[f'{perm}_{model_name}' for perm in actions], klass=klass, any_perm=True)
+
+    def has_permission(self, request, obj, action):
+        opts = self.opts
+        code_name = f'{action}_{opts.model_name}'
+        if obj:
+            return request.user.has_perm(f'{opts.app_label}.{code_name}', obj)
+        else:
+            return self.get_model_objects(request).exists()
+
+    def has_view_permission(self, request, obj=None):
+        return self.has_permission(request, obj, 'view')
+
+    def has_change_permission(self, request, obj=None):
+        return self.has_permission(request, obj, 'change')
+
+    def has_delete_permission(self, request, obj=None):
+        return self.has_permission(request, obj, 'delete')
 
 class ExamQustionInline(admin.TabularInline):
     autocomplete_fields = ['chapter', 'difficulty', 'type']
@@ -232,6 +268,7 @@ class ExamAdmin(admin.ModelAdmin):
     list_display = ['title', 'subject', 'created_at', 'starts_at', 'ends_at']
     search_fields = ['title', 'subject', 'created_at']
     list_filter = ['subject', 'created_at']
+    autocomplete_fields = ['subject']
 
 
 @admin.register(models.Result)
