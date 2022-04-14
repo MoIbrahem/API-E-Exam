@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
 # from .filters import ProductFilter
-from .models import  Exam, Student
+from .models import  Exam, Student, Subject,Department,Level
 from .serializers import  *
 from model_utils.managers import InheritanceQuerySet
 import requests
@@ -43,6 +43,20 @@ class StudentViewSet(ModelViewSet):
             return Response(serializer.data)
 
 class ExamViewSet(ModelViewSet):
-    queryset = Exam.objects.all()
+    
     serializer_class = ExamSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+
+        user = self.request.user
+
+        if user.is_staff:
+            return Exam.objects.all()
+        
+        # student = Student.objects.only('id', 'level', 'department').get(user_id=user.id)
+        level_id = Student.objects.only('level_id').get(user_id=user.id)
+        department_id = Student.objects.only('departments_id').get(user_id=user.id)
+        subjects = Subject.objects.filter(level_id=level_id,departments=department_id)
+        for subject in subjects:
+            
+            return Exam.objects.filter(subject=subject)

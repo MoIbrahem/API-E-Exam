@@ -6,7 +6,7 @@ from . import views
 router = routers.DefaultRouter()
 
 router.register('students', views.StudentViewSet)
-router.register('exams', views.ExamViewSet)
+router.register('exams', views.ExamViewSet,basename= 'exams')
 
 
 
