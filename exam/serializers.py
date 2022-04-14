@@ -15,4 +15,4 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         # fields = ['id', 'user_id', 'phone', 'birth_date', 'adresses']
-        fields = ['id', 'user_id', 'phone', 'birth_date']
+        fields = ['id', 'user_id', 'phone', 'birth_date','level','department']

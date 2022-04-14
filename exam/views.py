@@ -12,8 +12,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
 # from .filters import ProductFilter
-from .models import Cart, CartItem, Collection, Student, Order, OrderItem, Product, ProductImage, Review
-from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerializer, CollectionSerializer, CreateOrderSerializer, StudentSerializer, OrderSerializer, ProductImageSerializer, ProductSerializer, ReviewSerializer, UpdateCartItemSerializer, UpdateOrderSerializer
+from .models import  Student
+from .serializers import  StudentSerializer
 from model_utils.managers import InheritanceQuerySet
 import requests
 from django.shortcuts import render
@@ -29,15 +29,15 @@ class StudentViewSet(ModelViewSet):
     def history(self, request, pk):
         return Response('ok')
 
-    @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['GET', 'PUT','PATCH'], permission_classes=[IsAuthenticated])
     def me(self, request):
-        Student = Student.objects.get(
+        student = Student.objects.get(
             user_id=request.user.id)
         if request.method == 'GET':
-            serializer = StudentSerializer(Student)
+            serializer = StudentSerializer(student)
             return Response(serializer.data)
         elif request.method == 'PUT':
-            serializer = StudentSerializer(Student, data=request.data)
+            serializer = StudentSerializer(student, data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
