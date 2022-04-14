@@ -12,8 +12,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
 # from .filters import ProductFilter
-from .models import  Student
-from .serializers import  StudentSerializer
+from .models import  Exam, Student
+from .serializers import  *
 from model_utils.managers import InheritanceQuerySet
 import requests
 from django.shortcuts import render
@@ -41,3 +41,8 @@ class StudentViewSet(ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
+
+class ExamViewSet(ModelViewSet):
+    queryset = Exam.objects.prefetch_related('results').all()
+    serializer_class = ExamSerializer
+    permission_classes = [IsAdminUser]
