@@ -43,6 +43,6 @@ class StudentViewSet(ModelViewSet):
             return Response(serializer.data)
 
 class ExamViewSet(ModelViewSet):
-    queryset = Exam.objects.prefetch_related('results').all()
+    queryset = Exam.objects.all()
     serializer_class = ExamSerializer
     permission_classes = [IsAdminUser]
