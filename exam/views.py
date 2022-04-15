@@ -54,17 +54,16 @@ class ExamViewSet(ModelViewSet):
             return Exam.objects.all()
         
         student_id = Student.objects.only('id').get(user_id=user.id)
-        # print(student_level)
-        # student = Student.objects.only('id', 'level', 'department').get(user_id=user.id)
-        level = Level.objects.filter(student_level=student_id)
-        # department_id = Student.objects.only('department').get(user_id=user.id)
-        department = Department.objects.filter(student_department = student_id)
-        # print (level_id)
-        subjects = Subject.objects.filter(level=level, departments = department)
-        c = 0
-        for subject in subjects.iterator():
-           data = Exam.objects.filter(subject=subject)
-        print(c)
-        return data
-            
+        
+        level_id = Level.objects.only('id').get(student_level=student_id)
+        department_id = Department.objects.only('id').get(student_department = student_id)
+
+        subjects = Subject.objects.only('id').filter(level=level_id, departments = department_id)
+        
+
+
+        return Exam.objects.filter(subject_id__in =subjects)  
+        
+        
+        
         
