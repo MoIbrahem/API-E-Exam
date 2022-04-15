@@ -5,7 +5,7 @@ from rest_framework import fields, serializers
 # from .signals import order_created
 # from core.serializers import *
 # from core.models import *
-from .models import Answer, Chapter, Exam, ExamQuestion, Question, Result, Student, Subject
+from .models import Answer, Chapter, Difficulty, Exam, ExamQuestion, Question, Result, Student, Subject, Type
 
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,7 +16,8 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = ['id', 'title', 'type', 'answer']
-    answer = AnswerSerializer(many = True)
+    answer = AnswerSerializer(many = True
+    )
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,13 +41,20 @@ class CreateExamQuestionSerializer(serializers.Serializer):
         sub = Exam.objects.only('subject').get(id= exam__id)
         print(sub.subject_id)
         subject_id = sub.subject_id
-        eq = ExamQuestion.objects.filter(exam_id = exam__id)
-        print(eq)
+        eqs = ExamQuestion.objects.filter(exam_id = exam__id)
+        print(eqs)
         questions = Question.objects.filter(subject_id=subject_id)
         print(questions)
-        chapters = Chapter.objects.filter(chapters__in =eq)
-        print(chapters)
-        return questions
+       
+        # print(chapters)
+
+        # return questions
+
+        for eq in eqs.iterator():
+            # print(eq)
+            questions1 = questions.filter(chapter_id=eq.chapter.id, difficulty_id=eq.difficulty.id, type_id=eq.type.id)
+            print(questions1)
+            # return questions1
 
     def validate_exam_id(self, exam__id):
         if not Exam.objects.filter(pk=exam__id).exists():
