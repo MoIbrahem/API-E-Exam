@@ -96,16 +96,17 @@ class ExamQuestionViewSet(ModelViewSet):
         context= {'user_id':self.request.user.id}) 
         serializer.is_valid(raise_exception=True)
         sub = serializer.save()
-        serializer = SimpleExamSerializer(sub)
-        return   Response(serializer.data)
+        serializer = QuestionSerializer(sub, many=True)
+        return Response(serializer.data)
         
     
     def get_queryset(self):
         user = self.request.user
-        sub__id = create(self,self.request)
+        # sub__id = create(self,self.request)
         
         # subject_id = Subject.objects.only('id').get(exam = ex)
         # return Subject.objects.select_related('questions').filter(subject_id= subject_id)
+
 
 
 

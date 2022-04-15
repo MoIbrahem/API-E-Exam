@@ -5,20 +5,21 @@ from rest_framework import fields, serializers
 # from .signals import order_created
 # from core.serializers import *
 # from core.models import *
-from .models import Exam, ExamQuestion, Question, Result, Student, Subject
+from .models import Chapter, Exam, ExamQuestion, Question, Result, Student, Subject
 
 
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        # fields = ['id', 'title', 'type', 'answer']
-        fields = '__all__'
+        fields = ['id', 'title', 'type', 'answer']
+        
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
         fields = [ 'id','title', 'hours']
         read_only_fields = [ 'id','title', 'hours']
+
 class ExamQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExamQuestion
@@ -32,10 +33,16 @@ class CreateExamQuestionSerializer(serializers.Serializer):
     def save(self, **kwargs):
         exam__id = self.validated_data['exam__id']
         print(self.validated_data['exam__id'])
-        print(self.context['user_id'])
         sub = Exam.objects.only('subject').get(id= exam__id)
-        # qusestions = Question.objects.filter(subject_id = sub.id)
-        return sub
+        print(sub.subject_id)
+        subject_id = sub.subject_id
+        eq = ExamQuestion.objects.filter(exam_id = exam__id)
+        print(eq)
+        questions = Question.objects.filter(subject_id=subject_id)
+        print(questions)
+        chapters = Chapter.objects.filter(chapters__in =eq)
+        print(chapters)
+        return questions
 
     def validate_exam_id(self, exam__id):
         if not Exam.objects.filter(pk=exam__id).exists():

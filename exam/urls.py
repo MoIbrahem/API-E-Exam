@@ -7,7 +7,7 @@ router = routers.DefaultRouter()
 
 router.register('students', views.StudentViewSet)
 router.register('exams', views.ExamViewSet,basename= 'exams')
-
+router.register('examquestions', views.ExamQuestionViewSet, basename='examquestions')
 
 
 # URLConf
