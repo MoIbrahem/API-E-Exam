@@ -193,7 +193,7 @@ class Exam(models.Model):
 
 
 class ExamQuestion(models.Model):
-    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name= 'examquestion')
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='examquestion')
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='chapters')
     difficulty = models.ForeignKey(Difficulty, on_delete=models.CASCADE)
     type = models.ForeignKey(Type, on_delete=models.CASCADE)
