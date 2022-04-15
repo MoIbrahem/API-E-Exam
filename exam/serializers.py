@@ -5,14 +5,18 @@ from rest_framework import fields, serializers
 # from .signals import order_created
 # from core.serializers import *
 # from core.models import *
-from .models import Chapter, Exam, ExamQuestion, Question, Result, Student, Subject
+from .models import Answer, Chapter, Exam, ExamQuestion, Question, Result, Student, Subject
 
+class AnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ['id', 'title']
 
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = ['id', 'title', 'type', 'answer']
-        
+    answer = AnswerSerializer(many = True)
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
