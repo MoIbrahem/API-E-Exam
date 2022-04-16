@@ -6,6 +6,8 @@ from rest_framework import fields, serializers
 # from core.serializers import *
 # from core.models import *
 from .models import Answer, Chapter, Difficulty, Exam, ExamQuestion, Question, Result, Student, Subject, Type
+import random
+from itertools import chain
 
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -49,12 +51,41 @@ class CreateExamQuestionSerializer(serializers.Serializer):
         # print(chapters)
 
         # return questions
+        def randomquestions(query, quantity, nops):
+            output = []
+            for i in range(quantity):
+                n = random.randint(0, len(query)-1)
+                print(quantity)
+                print(quantity)
+                print(n)
+                if query[n] not in output:
+                    output.append(query[n])
 
+                elif quantity >= nops:
+                    output.append(query[n])
+                else:
+                    quantity += 1
+            return output
+        
+        queryset = []
         for eq in eqs.iterator():
             # print(eq)
-            questions1 = questions.filter(chapter_id=eq.chapter.id, difficulty_id=eq.difficulty.id, type_id=eq.type.id)
-            print(questions1)
-            # return questions1
+            quantity = eq.quantity
+            chapter = eq.chapter_id
+            difficulty = eq.difficulty_id
+            type = eq.type_id
+            quantity = eq.quantity
+            query = questions.filter(chapter_id=chapter, difficulty_id=difficulty, type_id=type)
+            # query = questions.filter(chapter_id=eq.chapter.id, difficulty_id=eq.difficulty.id, type_id=eq.type.id)
+            nops = len(query)
+            print(randomquestions(query, quantity, nops))
+            
+            if len(queryset) > 0:
+                queryset[0] = chain(queryset[0], randomquestions(query, quantity, nops))
+            else:
+                queryset.append(randomquestions(query, quantity, nops))       
+        return queryset[0]   
+        
 
     def validate_exam_id(self, exam__id):
         if not Exam.objects.filter(pk=exam__id).exists():
@@ -63,9 +94,6 @@ class CreateExamQuestionSerializer(serializers.Serializer):
         if Exam.objects.filter(exam_id=exam__id).count() == 0:
             raise serializers.ValidationError('The exam is empty.')
         return 'ok'
-    
-        
-    
     
 
 class ExamSerializer(serializers.ModelSerializer):
