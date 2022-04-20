@@ -39,14 +39,14 @@ class CreateExamQuestionSerializer(serializers.Serializer):
 
     def save(self, **kwargs):
         exam__id = self.validated_data['exam__id']
-        print(self.validated_data['exam__id'])
+        # print(self.validated_data['exam__id'])
         sub = Exam.objects.only('subject').get(id= exam__id)
-        print(sub.subject_id)
+        # print(sub.subject_id)
         subject_id = sub.subject_id
         eqs = ExamQuestion.objects.filter(exam_id = exam__id)
-        print(eqs)
+        # print(eqs)
         questions = Question.objects.filter(subject_id=subject_id)
-        print(questions)
+        # print(questions)
        
         # print(chapters)
 
@@ -55,9 +55,9 @@ class CreateExamQuestionSerializer(serializers.Serializer):
             output = []
             for i in range(quantity):
                 n = random.randint(0, len(query)-1)
-                print(quantity)
-                print(quantity)
-                print(n)
+                # print(quantity)
+                # print(quantity)
+                # print(n)
                 if query[n] not in output:
                     output.append(query[n])
 
@@ -76,9 +76,14 @@ class CreateExamQuestionSerializer(serializers.Serializer):
             type = eq.type_id
             quantity = eq.quantity
             query = questions.filter(chapter_id=chapter, difficulty_id=difficulty, type_id=type)
+
             # query = questions.filter(chapter_id=eq.chapter.id, difficulty_id=eq.difficulty.id, type_id=eq.type.id)
-            nops = len(query)
-            print(randomquestions(query, quantity, nops))
+            
+        
+            nops = len(query) #// number of obtions available to random from
+
+
+            # print(randomquestions(query, quantity, nops))
             
             if len(queryset) > 0:
                 queryset[0] = chain(queryset[0], randomquestions(query, quantity, nops))
