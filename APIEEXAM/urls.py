@@ -26,7 +26,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('exam/', include('exam.urls')),
     path('auth/', include('djoser.urls')),
-    path('auth/', include('djoser.urls.jwt')),
+    # path('auth/', include('djoser.urls.jwt')),  //overided abd added more payload info in core app
+    path('auth/', include('core.urls')),
     path('__debug__/', include('debug_toolbar.urls')),
 ]
 
