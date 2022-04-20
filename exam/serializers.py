@@ -1,7 +1,10 @@
 from asyncore import read
 from decimal import Decimal
+from time import time
 from django.db import transaction
 from rest_framework import fields, serializers
+import datetime
+from django.utils import timezone
 # from .signals import order_created
 # from core.serializers import *
 # from core.models import *
@@ -36,6 +39,7 @@ class ExamQuestionSerializer(serializers.ModelSerializer):
 
 class CreateExamQuestionSerializer(serializers.Serializer):
     exam__id = serializers.IntegerField()
+    
 
     def save(self, **kwargs):
         exam__id = self.validated_data['exam__id']
@@ -92,13 +96,20 @@ class CreateExamQuestionSerializer(serializers.Serializer):
         return queryset[0]   
         
 
-    def validate_exam_id(self, exam__id):
+    def validate_exam__id(self, exam__id):
+        timenow = timezone.now()
+        print(timenow)
+   
         if not Exam.objects.filter(pk=exam__id).exists():
             raise serializers.ValidationError(
                 'No exam with the given ID was found.')
-        if Exam.objects.filter(exam_id=exam__id).count() == 0:
+        if Exam.objects.filter(id=exam__id).count() == 0:
             raise serializers.ValidationError('The exam is empty.')
-        return 'ok'
+        if Exam.objects.only('starts_at').get(id=exam__id).starts_at > timenow:
+            raise serializers.ValidationError('The exam has not started yet.')
+        if Exam.objects.only('ends_at').get(id=exam__id).ends_at < timenow :
+            raise serializers.ValidationError('The exam has ended.')
+        return exam__id
     
 
 class ExamSerializer(serializers.ModelSerializer):
