@@ -177,9 +177,7 @@ class QuestinAdmin(admin.ModelAdmin):
 @admin.register(models.Subject)
 class SubjectAdmin(GuardedModelAdmin):
 
-    
-
-    list_display = ['title', 'department', 'level', 'professors', 'hours', 'exam', 'question']
+    list_display = ['title', 'department', 'level', 'professors', 'hours', 'question_count', 'exams_count']
     search_fields = ['title']
     list_filter = ['level', 'departments', 'hours']
     prepopulated_fields = {
@@ -193,46 +191,29 @@ class SubjectAdmin(GuardedModelAdmin):
     def department(self, obj):
         return "\n".join([department.title for department in obj.departments.all()])
 
-    @admin.display(ordering=['exam_count', 'question_count'])
-    def exam(self, subject):
-        url = (
-                reverse('admin:exam_exam_changelist')
-                + '?'
-                + urlencode({
-            'subject__id': str(subject.id)
-        }))
-        return format_html('<a href="{}">{} exams</a>', url, subject.exams_count)
-
-    def question(self, subject):
+    @admin.display(ordering=[ 'question_count', 'exam_count'])
+    def question_count(self, subject):
         url = (
                 reverse('admin:exam_question_changelist')
                 + '?'
                 + urlencode({
             'subject__id': str(subject.id)
         }))
-        return format_html('<a href="{}">{} questions</a>', url, subject.question_count)
+        return format_html('<a href="{}">{} questions</a>', url, subject.question_set.count())
 
-
-
-    # def get_queryset(self, request):
-    #     return super().get_queryset(request).annotate(
-    #         exams_count=Count('exam'), question_count=Count('question')
-    #     )
+    def exams_count(self, subject):
+        url = (
+                reverse('admin:exam_exam_changelist')
+                + '?'
+                + urlencode({
+            'subject__id': str(subject.id)
+        }))
+        return format_html('<a href="{}">{} exams</a>', url, subject.exam_set.count())
 
     def has_module_permission(self, request):
         if super().has_module_permission(request):
             return True
         return self.get_model_objects(request).exists()
-
-    def get_queryset(self, request):
-        if request.user.is_superuser:
-             data =super().get_queryset(request)
-        else:
-            data = self.get_model_objects(request)
-        
-        return data.annotate(
-            exams_count=Count('exam'), question_count=Count('question')
-        )
 
     def get_model_objects(self, request, action=None, klass=None):
         opts = self.opts
