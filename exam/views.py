@@ -133,10 +133,11 @@ class RightAnswerViewSet(ModelViewSet):
                                                   context={'user_id': self.request.user.id})
         serializer.is_valid(raise_exception=True)
         sub = serializer.save()
-        serializer = QuestionSerializer(sub, many=True)
+        serializer = RightAnswerSerializer(sub, many=True)
         return Response(serializer.data)
 
     def get_queryset(self):
-        exam__id = serializers.IntegerField()
         user = self.request.user
-        return RightAnswer.objects.all()
+        if user.is_staff:
+            return RightAnswer.objects.all()
+        return []

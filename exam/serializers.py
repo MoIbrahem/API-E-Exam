@@ -146,10 +146,18 @@ class RightAnswerSerializer(serializers.ModelSerializer):
 
 
 
-class CheckRightAnswerSerializer(serializers.ModelSerializer):
+class CheckRightAnswerSerializer(serializers.Serializer):
 
     exam__id = serializers.IntegerField()
-    # student_answer = serializers.ListField()    
+    student_answer = serializers.JSONField()  
+    
+
+    def save(self, **kwargs):
+        exam__id = self.validated_data['exam__id']
+        
+        return []
+    
+
     def validate_exam__id(self, exam__id):
         timenow = timezone.now()
         print(timenow)
