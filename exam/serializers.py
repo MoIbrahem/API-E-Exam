@@ -177,10 +177,12 @@ class CheckRightAnswerSerializer(serializers.Serializer):
         print(answersheet)
         
         degree = 0
+        count = 0
         for item in range(len(answersheet)):
             if answersheet[item] == student_answer[item]:
                 degree += 1
-
+            count += 1
+        
         print(degree)
 
         return []
