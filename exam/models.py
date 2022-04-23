@@ -142,8 +142,11 @@ class RightAnswer(models.Model):
     questions = models.ForeignKey(Question, on_delete=models.CASCADE)
     answers = models.ManyToManyField(Answer)
 
-    class Meta:
-        ordering = ['questions']
+    # def __str__(self) -> str:
+    #     return self.questions.id
+
+    # class Meta:
+    #     ordering = ['questions']
     # class Meta:
     #     unique_together = [['question', 'answer']]
 

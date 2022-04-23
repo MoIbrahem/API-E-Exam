@@ -12,6 +12,8 @@ from django.utils import timezone
 from .models import Answer, Chapter, Difficulty, Exam, ExamQuestion, Question, Result, RightAnswer, Student, Subject, Type
 import random
 from itertools import chain
+from collections import OrderedDict
+import json
 
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -154,7 +156,33 @@ class CheckRightAnswerSerializer(serializers.Serializer):
 
     def save(self, **kwargs):
         exam__id = self.validated_data['exam__id']
+        student_answer = self.validated_data['student_answer']
         
+        queryset = []
+        for i in student_answer :
+            
+            query = RightAnswer.objects.filter(questions = list(i.values())[0])
+          
+            if len(queryset) > 0:
+                queryset[0] = chain(queryset[0], query)
+            else:
+                queryset.append(list(query))       
+        
+        serializer = RightAnswerSerializer(list(queryset[0]), many = True )
+
+        ans = json.loads(json.dumps(serializer.data))
+        answersheet = list(ans)
+        
+        print(student_answer)
+        print(answersheet)
+        
+        degree = 0
+        for item in range(len(answersheet)):
+            if answersheet[item] == student_answer[item]:
+                degree += 1
+
+        print(degree)
+
         return []
     
 
@@ -173,3 +201,11 @@ class CheckRightAnswerSerializer(serializers.Serializer):
             raise serializers.ValidationError('The exam has ended.')
         return exam__id
     
+    def validate(self, student_answer):
+
+        # for i in student_answer:
+        #     if not Question.objects.filter(id = i.questions).exists():
+        #         raise serializers.ValidationError(
+        #         'No question with the given ID was found.')
+
+        return student_answer
