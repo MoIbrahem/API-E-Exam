@@ -13,6 +13,7 @@ router = routers.DefaultRouter()
 router.register('students', views.StudentViewSet)
 router.register('exams', views.ExamViewSet,basename='exams')
 router.register('examquestions', views.ExamQuestionViewSet, basename='examquestions')
+router.register('rightanswers', views.RightAnswerViewSet,basename='rightanswers')
 urlpatterns = router.urls
 # router.register('exams', views.ExamViewSet,basename= 'exams')
 # router.register('examquestions', views.ExamQuestionViewSet, basename='examquestions')

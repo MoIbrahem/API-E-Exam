@@ -1,6 +1,7 @@
 from operator import truediv
 from venv import create
 from rest_framework import response
+from exam import pagination
 from exam.permissions import FullDjangoModelPermissions, IsAdminOrReadOnly, ViewStudentHistoryPermission
 from exam.pagination import DefaultPagination
 from django.db.models.aggregates import Count
@@ -15,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
 # from .filters import ProductFilter
-from .models import Exam, Student, Subject, Department, Level
+from .models import Exam, RightAnswer, Student, Subject, Department, Level
 from .serializers import *
 from model_utils.managers import InheritanceQuerySet
 import requests
@@ -49,7 +50,7 @@ class StudentViewSet(ModelViewSet):
 
 class ExamViewSet(ModelViewSet):
     http_method_names = ['get', 'patch', 'delete', 'head', 'options']
-
+    pagination_class = DefaultPagination
     serializer_class = ExamSerializer
 
     def get_permissions(self):
@@ -77,6 +78,8 @@ class ExamViewSet(ModelViewSet):
 class ExamQuestionViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'delete', 'head', 'options']
 
+    pagination_class = DefaultPagination
+
     def get_permissions(self):
         if self.request.method in ['DELETE']:
             return [IsAdminUser()]
@@ -91,6 +94,7 @@ class ExamQuestionViewSet(ModelViewSet):
         return {'user_id': self.request.user.id, }
 
     def create(self, request, *args, **kwargs):
+        
         serializer = CreateExamQuestionSerializer(data=request.data,
                                                   context={'user_id': self.request.user.id})
         serializer.is_valid(raise_exception=True)
@@ -100,7 +104,39 @@ class ExamQuestionViewSet(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        return[]
         # sub__id = create(self,self.request)
 
         # subject_id = Subject.objects.only('id').get(exam = ex)
         # return Subject.objects.select_related('questions').filter(subject_id= subject_id)
+
+
+class RightAnswerViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'delete', 'head', 'options']
+    def get_permissions(self):
+        if self.request.method in ['DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticatedOrReadOnly()]
+
+    
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CheckRightAnswerSerializer
+        return RightAnswerSerializer
+
+    def get_serializer_context(self):
+        return {'user_id': self.request.user.id, }
+
+    def create(self, request, *args, **kwargs):
+        serializer = CheckRightAnswerSerializer(data=request.data,
+                                                  context={'user_id': self.request.user.id})
+        serializer.is_valid(raise_exception=True)
+        sub = serializer.save()
+        serializer = QuestionSerializer(sub, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        exam__id = serializers.IntegerField()
+        user = self.request.user
+        return RightAnswer.objects.all()

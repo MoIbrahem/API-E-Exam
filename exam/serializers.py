@@ -1,5 +1,6 @@
 from asyncore import read
 from decimal import Decimal
+from pyexpat import model
 from time import time
 from django.db import transaction
 from rest_framework import fields, serializers
@@ -8,7 +9,7 @@ from django.utils import timezone
 # from .signals import order_created
 # from core.serializers import *
 # from core.models import *
-from .models import Answer, Chapter, Difficulty, Exam, ExamQuestion, Question, Result, Student, Subject, Type
+from .models import Answer, Chapter, Difficulty, Exam, ExamQuestion, Question, Result, RightAnswer, Student, Subject, Type
 import random
 from itertools import chain
 
@@ -134,3 +135,33 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         # fields = ['id', 'user_id', 'phone', 'birth_date', 'adresses']
         fields = ['id', 'user_id', 'phone', 'birth_date','level','department']
+
+
+class RightAnswerSerializer(serializers.ModelSerializer):
+    
+
+    class Meta:
+        model = RightAnswer
+        fields = ['questions', 'answers']
+
+
+
+class CheckRightAnswerSerializer(serializers.ModelSerializer):
+
+    exam__id = serializers.IntegerField()
+    # student_answer = serializers.ListField()    
+    def validate_exam__id(self, exam__id):
+        timenow = timezone.now()
+        print(timenow)
+   
+        if not Exam.objects.filter(pk=exam__id).exists():
+            raise serializers.ValidationError(
+                'No exam with the given ID was found.')
+        if Exam.objects.filter(id=exam__id).count() == 0:
+            raise serializers.ValidationError('The exam is empty.')
+        if Exam.objects.only('starts_at').get(id=exam__id).starts_at > timenow:
+            raise serializers.ValidationError('The exam has not started yet.')
+        if Exam.objects.only('ends_at').get(id=exam__id).ends_at < timenow :
+            raise serializers.ValidationError('The exam has ended.')
+        return exam__id
+    
