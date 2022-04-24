@@ -130,10 +130,10 @@ class RightAnswerViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = CheckRightAnswerSerializer(data=request.data,
-                                                  context={'user_id': self.request.user.id})
+                                                  context={'user_id': self.request.user.id, 'is_staff': self.request.user.is_staff})
         serializer.is_valid(raise_exception=True)
         sub = serializer.save()
-        serializer = RightAnswerSerializer(sub, many=True)
+        serializer = ResultSerializer(sub, many=True)
         return Response(serializer.data)
 
     def get_queryset(self):
@@ -141,3 +141,22 @@ class RightAnswerViewSet(ModelViewSet):
         if user.is_staff:
             return RightAnswer.objects.all()
         return []
+
+class ResultViewSet(ModelViewSet):
+    pagination_class = DefaultPagination
+    serializer_class = ResultSerializer
+
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticatedOrReadOnly()]
+
+    def get_queryset(self):
+
+        user = self.request.user
+        student_id = Student.objects.only('id').get(user_id=user.id)
+
+        if user.is_staff:
+            return Result.objects.all()
+
+        return Result.objects.filter(student_id = student_id)

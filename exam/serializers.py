@@ -155,38 +155,46 @@ class CheckRightAnswerSerializer(serializers.Serializer):
     
 
     def save(self, **kwargs):
-        exam__id = self.validated_data['exam__id']
-        student_answer = self.validated_data['student_answer']
-        
-        queryset = []
-        for i in student_answer :
+
+        if self.context['is_staff']:
+            return []
+        with transaction.atomic():
+            exam__id = self.validated_data['exam__id']
+            student_answer = self.validated_data['student_answer']
+            user_id = self.context['user_id']
+            student = Student.objects.get(user_id=self.context['user_id'])
+            queryset = []
+            for i in student_answer :
+                
+                query = RightAnswer.objects.filter(questions = list(i.values())[0])
             
-            query = RightAnswer.objects.filter(questions = list(i.values())[0])
-          
-            if len(queryset) > 0:
-                queryset[0] = chain(queryset[0], query)
-            else:
-                queryset.append(list(query))       
-        
-        serializer = RightAnswerSerializer(list(queryset[0]), many = True )
+                if len(queryset) > 0:
+                    queryset[0] = chain(queryset[0], query)
+                else:
+                    queryset.append(list(query))       
+            
+            serializer = RightAnswerSerializer(list(queryset[0]), many = True )
 
-        ans = json.loads(json.dumps(serializer.data))
-        answersheet = list(ans)
-        
-        print(student_answer)
-        print(answersheet)
-        
-        degree = 0
-        count = 0
-        for item in range(len(answersheet)):
-            if answersheet[item] == student_answer[item]:
-                degree += 1
-            count += 1
-            #.
-        
-        print(degree)
+            ans = json.loads(json.dumps(serializer.data))
+            answersheet = list(ans)
+            
+            print(student_answer)
+            print(answersheet)
+            
+            degree = 0
+            count = 0
+            for item in range(len(answersheet)):
+                if answersheet[item] == student_answer[item]:
+                    degree += 1
+                count += 1
+                #.
+            
+            print(degree)
+            degree = (degree/count)*100
+            Result.objects.create(exam_id=exam__id, student = student, degree=degree)
+            return Result.objects.filter(exam_id=exam__id, student= student)
 
-        return []
+    
     
 
     def validate_exam__id(self, exam__id):
@@ -212,3 +220,36 @@ class CheckRightAnswerSerializer(serializers.Serializer):
         #         'No question with the given ID was found.')
 
         return student_answer
+
+class ResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Result
+        fields = ['exam', 'student' ,'degree']
+        read_only_fields = ['degree']
+
+# class GetSpecificResultSerializer(serializers.Serializer):
+#     exam__id = serializers.IntegerField()
+#     def save(self, **kwargs):
+#         exam__id = self.validated_data['exam__id']
+#         user = Person.objects.get(user_id=self.context['user_id'])
+#         user_is_staff = self.context['is_staff']
+#         if self.context['is_staff']:
+#             sub = Exam.objects.only('subject').get(id=exam__id)
+#             sub = Subject.objects.get(id=sub.id)
+#             prof = Professor.objects.get(subjects=sub)
+#             if user.id == prof.id:
+#                 return Result.objects.filter(exam_id=exam__id)
+#         return Result.objects.filter(exam_id=exam__id, student= user)
+
+#     def validate_exam__id(self, exam__id):
+#         timenow = timezone.now()
+#         print(timenow)
+
+#         if not Exam.objects.filter(pk=exam__id).exists():
+#             raise serializers.ValidationError(
+#                 'No exam with the given ID was found.')
+#         if Exam.objects.filter(id=exam__id).count() == 0:
+#             raise serializers.ValidationError('The exam is empty.')
+#         if Exam.objects.only('starts_at').get(id=exam__id).starts_at > timenow:
+#             raise serializers.ValidationError('The exam has not started yet.')
+#         return exam__id 
