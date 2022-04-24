@@ -182,6 +182,7 @@ class CheckRightAnswerSerializer(serializers.Serializer):
             if answersheet[item] == student_answer[item]:
                 degree += 1
             count += 1
+            #.
         
         print(degree)
 
