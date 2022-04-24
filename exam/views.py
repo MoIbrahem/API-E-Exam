@@ -130,14 +130,90 @@ class RightAnswerViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = CheckRightAnswerSerializer(data=request.data,
-                                                  context={'user_id': self.request.user.id})
+                                                  context={'user_id': self.request.user.id, 'is_staff': self.request.user.is_staff})
         serializer.is_valid(raise_exception=True)
         sub = serializer.save()
-        serializer = RightAnswerSerializer(sub, many=True)
+        print(sub)
+        serializer = ResultSerializer(sub, many=True)
         return Response(serializer.data)
 
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return RightAnswer.objects.all()
+            user = self.request.user
+        if user.is_staff:
+            professor = Person.objects.get(user_id=user.id)
+            sub = Subject.objects.filter(professor=professor)
+            question = Question.objects.filter(subject__in=sub)
+            return RightAnswer.objects.filter(questions__in=question)
         return []
+
+class ExamQuestionViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'delete', 'head', 'options']
+
+    pagination_class = DefaultPagination
+
+    def get_permissions(self):
+        if self.request.method in ['DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticatedOrReadOnly()]
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateExamQuestionSerializer
+        return ExamQuestionSerializer
+
+    def get_serializer_context(self):
+        return {'user_id': self.request.user.id, }
+
+    def create(self, request, *args, **kwargs):
+        
+        serializer = CreateExamQuestionSerializer(data=request.data,
+                                                  context={'user_id': self.request.user.id})
+        serializer.is_valid(raise_exception=True)
+        sub = serializer.save()
+        serializer = QuestionSerializer(sub, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        user = self.request.user
+        return[]
+        # sub__id = create(self,self.request)
+
+        # subject_id = Subject.objects.only('id').get(exam = ex)
+        # return Subject.objects.select_related('questions').filter(subject_id= subject_id)
+
+
+class ResultViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'delete', 'head', 'options']
+    def get_permissions(self):
+        if self.request.method in ['DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticatedOrReadOnly()]
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return GetSpecificResultSerializer
+        return ResultSerializer
+
+    def get_serializer_context(self):
+        return {'user_id': self.request.user.id, }
+
+    def create(self, request, *args, **kwargs):
+        serializer = GetSpecificResultSerializer(data=request.data,
+                                                  context={'user_id': self.request.user.id, 'is_staff': self.request.user.is_staff})
+        serializer.is_valid(raise_exception=True)
+        sub = serializer.save()
+        print(sub)
+        serializer = ResultSerializer(sub, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            professor = Person.objects.get(user_id=user.id)
+            sub = Subject.objects.filter(professor=professor)
+            exam = Exam.objects.filter(subject__in=sub)
+            return Result.objects.filter(exam__in=exam)
+        student = Student.objects.get(user_id=user.id)
+        return Result.objects.filter(student=student)
