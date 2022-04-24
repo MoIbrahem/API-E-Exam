@@ -9,7 +9,7 @@ from django.utils import timezone
 # from .signals import order_created
 # from core.serializers import *
 # from core.models import *
-from .models import Answer, Chapter, Difficulty, Exam, ExamQuestion, Question, Result, RightAnswer, Professor,Student, Person,Subject, Type
+from .models import Answer, Chapter, Difficulty, Exam, ExamQuestion, Question, Result, RightAnswer, Student, Subject, Type
 import random
 from itertools import chain
 from collections import OrderedDict
@@ -140,6 +140,8 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class RightAnswerSerializer(serializers.ModelSerializer):
+    
+
     class Meta:
         model = RightAnswer
         fields = ['questions', 'answers']
@@ -147,18 +149,18 @@ class RightAnswerSerializer(serializers.ModelSerializer):
 
 
 class CheckRightAnswerSerializer(serializers.Serializer):
+
     exam__id = serializers.IntegerField()
     student_answer = serializers.JSONField()  
+    
+
     def save(self, **kwargs):
-        if self.context['is_staff']:
-            return []
         exam__id = self.validated_data['exam__id']
         student_answer = self.validated_data['student_answer']
-        exam = Exam.objects.get(id=exam__id)
-        student = Student.objects.get(user_id=self.context['user_id'])
-        print(student)
+        
         queryset = []
-        for i in student_answer:
+        for i in student_answer :
+            
             query = RightAnswer.objects.filter(questions = list(i.values())[0])
           
             if len(queryset) > 0:
@@ -181,13 +183,11 @@ class CheckRightAnswerSerializer(serializers.Serializer):
                 degree += 1
             count += 1
         
-        degree = (degree/count)*100
         print(degree)
-        Result.objects.create(exam=exam, student= student, degree=degree)
-        return Result.objects.filter(exam=exam, student= student)
+
+        return []
     
 
-    
     def validate_exam__id(self, exam__id):
         timenow = timezone.now()
         print(timenow)
@@ -202,7 +202,7 @@ class CheckRightAnswerSerializer(serializers.Serializer):
         if Exam.objects.only('ends_at').get(id=exam__id).ends_at < timenow :
             raise serializers.ValidationError('The exam has ended.')
         return exam__id
-
+    
     def validate(self, student_answer):
 
         # for i in student_answer:
@@ -211,37 +211,3 @@ class CheckRightAnswerSerializer(serializers.Serializer):
         #         'No question with the given ID was found.')
 
         return student_answer
-
-
-class ResultSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Result
-        fields = ['exam', 'student' ,'degree']
-        read_only_fields = ['degree']
-
-class GetSpecificResultSerializer(serializers.Serializer):
-    exam__id = serializers.IntegerField()
-    def save(self, **kwargs):
-        exam__id = self.validated_data['exam__id']
-        user = Person.objects.get(user_id=self.context['user_id'])
-        user_is_staff = self.context['is_staff']
-        if self.context['is_staff']:
-            sub = Exam.objects.only('subject').get(id=exam__id)
-            sub = Subject.objects.get(id=sub.id)
-            prof = Professor.objects.get(subjects=sub)
-            if user.id == prof.id:
-                return Result.objects.filter(exam_id=exam__id)
-        return Result.objects.filter(exam_id=exam__id, student= user)
-    
-    def validate_exam__id(self, exam__id):
-        timenow = timezone.now()
-        print(timenow)
-   
-        if not Exam.objects.filter(pk=exam__id).exists():
-            raise serializers.ValidationError(
-                'No exam with the given ID was found.')
-        if Exam.objects.filter(id=exam__id).count() == 0:
-            raise serializers.ValidationError('The exam is empty.')
-        if Exam.objects.only('starts_at').get(id=exam__id).starts_at > timenow:
-            raise serializers.ValidationError('The exam has not started yet.')
-        return exam__id
