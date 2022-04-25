@@ -1,10 +1,21 @@
+from dataclasses import fields
+import django_filters
 from django_filters.rest_framework import FilterSet
-from .models import Product
+from .models import Exam, Result, Student, Level, Subject, Department
 
-# class ProductFilter(FilterSet):
-#   class Meta:
-#     model = Product
-#     fields = {
-#       'collection_id': ['exact'],
-#       'unit_price': ['gt', 'lt']
-#     }
+
+class ExamtFilter(FilterSet):
+    class Meta:
+        model = Exam
+        fields = {
+        'subject_id': ['exact'],
+    }
+
+
+class ResultFilter(FilterSet):
+    class Meta:
+        model = Result
+        fields = {
+        'exam__subject': ['exact'],
+        'degree': ['gt', 'lt']
+    }

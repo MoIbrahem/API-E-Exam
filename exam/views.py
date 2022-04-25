@@ -15,12 +15,14 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthentic
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
-# from .filters import ProductFilter
+from .filters import *
 from .models import Exam, RightAnswer, Student, Subject, Department, Level
 from .serializers import *
 from model_utils.managers import InheritanceQuerySet
 import requests
 from django.shortcuts import render
+
+from exam import filters
 
 
 # Create your views here.
@@ -52,11 +54,19 @@ class ExamViewSet(ModelViewSet):
     http_method_names = ['get', 'patch', 'delete', 'head', 'options']
     pagination_class = DefaultPagination
     serializer_class = ExamSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+
+    filterset_class = ExamtFilter
+    search_fields = ['title']
+    ordering_fields = ['starts_at', 'ends_at']
 
     def get_permissions(self):
         if self.request.method in ['PATCH', 'DELETE']:
             return [IsAdminUser()]
         return [IsAuthenticatedOrReadOnly()]
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
     def get_queryset(self):
 
@@ -145,6 +155,10 @@ class RightAnswerViewSet(ModelViewSet):
 class ResultViewSet(ModelViewSet):
     pagination_class = DefaultPagination
     serializer_class = ResultSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    
+    filterset_class = ResultFilter
+    ordering_fields = ['degree', 'exam_title']
 
     def get_permissions(self):
         if self.request.method in ['PATCH', 'DELETE']:
