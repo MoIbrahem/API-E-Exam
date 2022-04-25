@@ -161,7 +161,7 @@ class ResultViewSet(ModelViewSet):
     ordering_fields = ['degree', 'exam_title']
 
     def get_permissions(self):
-        if self.request.method in ['PATCH', 'DELETE']:
+        if self.request.method in ['PATCH', 'DELETE','POST']:
             return [IsAdminUser()]
         return [IsAuthenticatedOrReadOnly()]
 

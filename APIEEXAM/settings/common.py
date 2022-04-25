@@ -157,9 +157,14 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'core.User'
 
 DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
     'SERIALIZERS': {
         'user_create': 'core.serializers.UserCreateSerializer',
         'current_user': 'core.serializers.UserSerializer',
+    },
+    'EMAIL' : {
+        'password_reset': 'djoser.email.PasswordResetEmail',
+        'password_changed_confirmation': 'djoser.email.PasswordChangedConfirmationEmail',
     }
 }
 
