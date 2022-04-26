@@ -174,3 +174,13 @@ class ResultViewSet(ModelViewSet):
             return Result.objects.all()
 
         return Result.objects.filter(student_id = student_id)
+
+
+class QuestionImageViewSet(ModelViewSet):
+    serializer_class = QuestionImageSerializer
+
+    def get_serializer_context(self):
+        return {'question_id': self.kwargs['question_pk']}
+
+    def get_queryset(self):
+        return Image.objects.filter(question_id=self.kwargs['question_pk'])

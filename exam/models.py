@@ -215,3 +215,9 @@ class Result(models.Model):
 
     class Meta:
         unique_together = [['exam', 'student']]
+
+
+class Image(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE,null= True, related_name='images')
+    # student = models.OneToOneField(Student, on_delete=models.CASCADE,null= True, related_name='image')
+    image = models.ImageField(upload_to='exam/images')

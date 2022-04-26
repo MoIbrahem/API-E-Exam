@@ -1,6 +1,7 @@
 from asyncore import read
 from decimal import Decimal
 from pyexpat import model
+from statistics import mode
 from time import time
 from django.db import transaction
 from rest_framework import fields, serializers
@@ -9,7 +10,7 @@ from django.utils import timezone
 # from .signals import order_created
 # from core.serializers import *
 # from core.models import *
-from .models import Answer, Chapter, Difficulty, Exam, ExamQuestion, Question, Result, RightAnswer, Student, Subject, Type
+from .models import *
 import random
 from itertools import chain
 from collections import OrderedDict
@@ -20,12 +21,28 @@ class AnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = ['id', 'title']
 
+class TypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Type
+        fields = ['title']
+
+class QuestionImageSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        question_id = self.context['question_id']
+        return Image.objects.create(question_id=question_id, **validated_data)
+    class Meta:
+        model = Image
+        fields = ['id','image']
+
+
+
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        fields = ['id', 'title', 'type', 'answer']
-    answer = AnswerSerializer(many = True
-    )
+        fields = ['id', 'title' ,  'type' , 'images', 'answer']
+    answer = AnswerSerializer(many = True)
+    type = TypeSerializer()
+    images = QuestionImageSerializer(many=True, read_only=True)
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -136,8 +153,8 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         # fields = ['id', 'user_id', 'phone', 'birth_date', 'adresses']
-        fields = ['id', 'user_id', 'phone', 'birth_date','level','department']
-
+        fields = ['id', 'user_id' , 'phone', 'birth_date','level','department']
+        
 
 class RightAnswerSerializer(serializers.ModelSerializer):
     

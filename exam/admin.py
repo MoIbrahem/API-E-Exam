@@ -13,6 +13,7 @@ from . import models
 # Register your models here.
 
 
+
 @admin.register(models.Person)
 class PersonAdmin(admin.ModelAdmin):
     list_display = ['__str__']
@@ -157,6 +158,14 @@ class RightAnswerInline(admin.TabularInline):
     model = models.RightAnswer
     autocomplete_fields = ['answers']
 
+class QuestionImageInline(admin.TabularInline):
+    model = models.Image
+    readonly_fields = ['thumbnail']
+
+    def thumbnail(self, instance):
+        if instance.image.name != '':
+            return format_html(f'<img src="{instance.image.url}" class="thumbnail" />')
+        return ''
 
 @admin.register(models.RightAnswer)
 class RightAnswerAdmin(admin.ModelAdmin):
@@ -164,7 +173,7 @@ class RightAnswerAdmin(admin.ModelAdmin):
 
 @admin.register(models.Question)
 class QuestinAdmin(admin.ModelAdmin):
-    inlines = [RightAnswerInline]  # , AnswerInline]
+    inlines = [RightAnswerInline, QuestionImageInline]  # , AnswerInline]
     list_display = ['title', 'answers', 'chapter', 'subject', 'type', 'difficulty']
     search_fields = ['title','chapter','subject','type','difficulty']
     list_filter = ['subject', 'chapter', 'difficulty', 'type']
@@ -172,6 +181,10 @@ class QuestinAdmin(admin.ModelAdmin):
     def answers(self, obj):
         return "\n".join([answer.title for answer in obj.answer.all()])
 
+    class Media:
+        css = {
+            'all': ['exam/style.css']
+        }
 
 
 @admin.register(models.Subject)
