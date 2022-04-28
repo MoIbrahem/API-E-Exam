@@ -46,7 +46,7 @@ class ProfessorAdmin(PersonAdmin):
 
 @admin.register(models.Student)
 class StudentAdmin(PersonAdmin):
-    list_display = ['__str__','results_number','level','department']
+    list_display = ['__str__','results_number','level','department','score','overall_level_rank']
     autocomplete_fields = ['level', 'user','department']
 
     @admin.display(ordering='subjects_number')

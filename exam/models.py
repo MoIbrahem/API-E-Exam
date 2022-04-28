@@ -162,9 +162,21 @@ class Person(models.Model):
         ordering = ['user__first_name', 'user__last_name']
 
 
+
 class Student(Person):
     level = models.ForeignKey(Level,on_delete=models.PROTECT, null=True,related_name='student_level')
     department = models.ForeignKey(Department,on_delete=models.PROTECT, null=True, related_name='student_department')
+    score = models.IntegerField(validators=[MinValueValidator(0)])
+    
+    @property 
+    def overall_level_rank(self, *args, **kwargs):
+        overll_marks = Student.objects.filter(level= self.level).values_list('score', flat=True).distinct().order_by('-score')
+        print(overll_marks)
+        if self.score == 0:
+            rank = 0
+        else :
+            rank = list(overll_marks).index(self.score) +1
+        return rank
 
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
