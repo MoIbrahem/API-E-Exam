@@ -171,11 +171,11 @@ class Student(Person):
     @property 
     def overall_level_rank(self, *args, **kwargs):
         overll_marks = Student.objects.filter(level= self.level).values_list('score', flat=True).distinct().order_by('-score')
-        print(overll_marks)
         if self.score == 0:
             rank = 0
         else :
             rank = list(overll_marks).index(self.score) +1
+        print(overll_marks)
         return rank
 
     def __str__(self):

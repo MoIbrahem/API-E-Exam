@@ -38,7 +38,7 @@ class StudentViewSet(ModelViewSet):
 
     @action(detail=False, methods=['GET', 'PUT', 'PATCH'], permission_classes=[IsAuthenticated])
     def me(self, request):
-        student = Student.objects.get(
+        student = self.queryset.get(
             user_id=request.user.id)
         if request.method == 'GET':
             serializer = StudentSerializer(student)
