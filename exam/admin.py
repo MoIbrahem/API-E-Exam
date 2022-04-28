@@ -269,6 +269,6 @@ class ExamAdmin(admin.ModelAdmin):
 
 @admin.register(models.Result)
 class ResultAdmin(admin.ModelAdmin):
-    list_display = ['exam', 'student', 'degree']
+    list_display = ['exam', 'student', 'degree','total', 'score','ranking']
     search_fields = ['title', 'subject', 'created_at']
     list_filter = ['exam', 'student', 'degree']

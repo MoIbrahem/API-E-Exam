@@ -204,8 +204,8 @@ class CheckRightAnswerSerializer(serializers.Serializer):
                 #.
             
             print(degree)
-            degree = (degree/count)*100
-            Result.objects.create(exam_id=exam__id, student = student, degree=degree)
+            score = (degree/count)*100
+            Result.objects.create(exam_id=exam__id, student = student, degree = degree, total = count ,score=score)
             return Result.objects.filter(exam_id=exam__id, student= student)
 
     
@@ -236,10 +236,11 @@ class CheckRightAnswerSerializer(serializers.Serializer):
         return student_answer
 
 class ResultSerializer(serializers.ModelSerializer):
+    ranking = serializers.IntegerField()
     class Meta:
         model = Result
-        fields = ['exam', 'student' ,'degree']
-        read_only_fields = ['degree']
+        fields = ['exam', 'student' ,'degree', 'total', 'score', 'ranking']
+        read_only_fields = ['degree', 'total', 'score']
 
 # class GetSpecificResultSerializer(serializers.Serializer):
 #     exam__id = serializers.IntegerField()

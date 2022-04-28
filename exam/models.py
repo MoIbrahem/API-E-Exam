@@ -212,7 +212,16 @@ class Result(models.Model):
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='exam')
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='results')
     degree = models.IntegerField(validators=[MinValueValidator(0)])
+    total = models.IntegerField(validators=[MinValueValidator(0)])
+    score = models.IntegerField(validators=[MinValueValidator(0)])
 
+
+    @property 
+    def ranking(self, *args, **kwargs):
+        marks = Result.objects.filter(exam = self.exam).values_list('score', flat=True).distinct().order_by('-score')
+        print(marks)
+        rank = list(marks).index(self.score) +1
+        return rank
     class Meta:
         unique_together = [['exam', 'student']]
 
