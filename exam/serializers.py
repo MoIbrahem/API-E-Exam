@@ -57,7 +57,26 @@ class ExamQuestionSerializer(serializers.ModelSerializer):
         
     question = QuestionSerializer()
 
-class CreateExamQuestionSerializer(serializers.Serializer):
+class ValidationSerializer(serializers.Serializer):
+    def validate_exam__id(self, exam__id):
+        timenow = timezone.now()
+        print(timenow)
+        student = Student.objects.get(user_id=self.context['user_id'])
+   
+        if not Exam.objects.filter(pk=exam__id).exists():
+            raise serializers.ValidationError(
+                'No exam with the given ID was found.')
+        if Exam.objects.filter(id=exam__id).count() == 0:
+            raise serializers.ValidationError('The exam is empty.')
+        if Exam.objects.only('starts_at').get(id=exam__id).starts_at > timenow:
+            raise serializers.ValidationError('The exam has not started yet.')
+        if Exam.objects.only('ends_at').get(id=exam__id).ends_at < timenow :
+            raise serializers.ValidationError('The exam has ended.')
+        if Result.objects.filter(exam_id = exam__id, student_id = student.id).exists():
+            raise serializers.ValidationError('You have already taken this exam before.')
+        return exam__id
+    
+class CreateExamQuestionSerializer(ValidationSerializer):
     exam__id = serializers.IntegerField()
     
 
@@ -105,9 +124,6 @@ class CreateExamQuestionSerializer(serializers.Serializer):
             
         
             nops = len(query) #// number of obtions available to random from
-
-
-            # print(randomquestions(query, quantity, nops))
             
             if len(queryset) > 0:
                 queryset[0] = chain(queryset[0], randomquestions(query, quantity, nops))
@@ -115,21 +131,6 @@ class CreateExamQuestionSerializer(serializers.Serializer):
                 queryset.append(randomquestions(query, quantity, nops))       
         return queryset[0]   
         
-
-    def validate_exam__id(self, exam__id):
-        timenow = timezone.now()
-        print(timenow)
-   
-        if not Exam.objects.filter(pk=exam__id).exists():
-            raise serializers.ValidationError(
-                'No exam with the given ID was found.')
-        if Exam.objects.filter(id=exam__id).count() == 0:
-            raise serializers.ValidationError('The exam is empty.')
-        if Exam.objects.only('starts_at').get(id=exam__id).starts_at > timenow:
-            raise serializers.ValidationError('The exam has not started yet.')
-        if Exam.objects.only('ends_at').get(id=exam__id).ends_at < timenow :
-            raise serializers.ValidationError('The exam has ended.')
-        return exam__id
     
 
 class ExamSerializer(serializers.ModelSerializer):
@@ -165,7 +166,7 @@ class RightAnswerSerializer(serializers.ModelSerializer):
 
 
 
-class CheckRightAnswerSerializer(serializers.Serializer):
+class CheckRightAnswerSerializer(ValidationSerializer):
 
     exam__id = serializers.IntegerField()
     student_answer = serializers.JSONField()  
@@ -213,24 +214,7 @@ class CheckRightAnswerSerializer(serializers.Serializer):
             return Result.objects.filter(exam_id=exam__id, student= student)
 
     
-    
-
-    def validate_exam__id(self, exam__id):
-        timenow = timezone.now()
-        print(timenow)
-   
-        if not Exam.objects.filter(pk=exam__id).exists():
-            raise serializers.ValidationError(
-                'No exam with the given ID was found.')
-        if Exam.objects.filter(id=exam__id).count() == 0:
-            raise serializers.ValidationError('The exam is empty.')
-        if Exam.objects.only('starts_at').get(id=exam__id).starts_at > timenow:
-            raise serializers.ValidationError('The exam has not started yet.')
-        if Exam.objects.only('ends_at').get(id=exam__id).ends_at < timenow :
-            raise serializers.ValidationError('The exam has ended.')
-        return exam__id
-    
-    def validate(self, student_answer):
+    def validate_student_answer(self, student_answer):
 
         # for i in student_answer:
         #     if not Question.objects.filter(id = i.questions).exists():
