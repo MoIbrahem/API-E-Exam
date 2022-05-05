@@ -116,18 +116,18 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 @admin.register(models.Chapter)
 class ChapterAdmin(admin.ModelAdmin):
-    list_display = ['title', 'subjects']
+    list_display = ['title', 'subjects_n']
     search_fields = ['title']
-    list_filter = ['subject']
+    list_filter = ['subjects']
     @admin.display(ordering='subjects')
-    def subjects(self, chapter):
+    def subjects_n(self, chapter):
         url = (
                 reverse('admin:exam_subject_changelist')
                 + '?'
                 + urlencode({
             'chapter__id': str(chapter.id)
         }))
-        return format_html('<a href="{}">{} </a>', url, chapter.subject.title)
+        return format_html('<a href="{}">{} </a>', url, "\n".join([subject.title for subject in chapter.subjects.all()]))
 
 
 
@@ -196,7 +196,7 @@ class SubjectAdmin(GuardedModelAdmin):
     prepopulated_fields = {
         'slug': ['title']
     }
-    autocomplete_fields = ['level', 'departments']
+    autocomplete_fields = ['level', 'departments','chapters']
 
     def professors(self, obj):
         return "\n".join([professor.__str__() for professor in obj.professor_set.all()])

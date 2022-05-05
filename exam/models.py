@@ -37,7 +37,13 @@ class Department(models.Model):
     class Meta:
         ordering = ['title']
 
+class Chapter(models.Model):
+    title = models.CharField(max_length=255)    
+    def __str__(self) -> str:
+        return self.title
 
+    class Meta:
+        ordering = ['title']
 
 class Subject(models.Model):
     title = models.CharField(max_length=255)
@@ -46,26 +52,13 @@ class Subject(models.Model):
     hours = models.IntegerField(validators=[MinValueValidator(1)])
     level = models.ForeignKey(Level, on_delete=models.PROTECT)
     departments = models.ManyToManyField(Department)
+    chapters = models.ManyToManyField(Chapter, related_name='subjects')
 
     def __str__(self) -> str:
         return self.title
 
     class Meta:
         ordering = ['title']
-
-
-class Chapter(models.Model):
-    title = models.CharField(max_length=255)
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True)
-    # question = models.ForeignKey(
-    #     'Question', on_delete=models.SET_NULL, null=True, related_name='+', blank=True)
-
-    def __str__(self) -> str:
-        return self.title
-
-    class Meta:
-        ordering = ['title']
-
 
 class Difficulty(models.Model):
     DEFICULTY_EASY = 'E'
@@ -81,15 +74,12 @@ class Difficulty(models.Model):
     title = models.CharField(
         max_length=1, choices=DEFICULTY_CHOICES, default=DEFICULTY_MEDIUM)
 
-    # question = models.ForeignKey(
-    #     'Question', on_delete=models.SET_NULL, null=True, related_name='+', blank=True)
 
     def __str__(self) -> str:
         return self.title
 
     class Meta:
         ordering = ['title']
-
 
 class Type(models.Model):
     TYPE_TRUE_OR_FALSE = 'TOF'
@@ -103,8 +93,6 @@ class Type(models.Model):
     title = models.CharField(
         max_length=3, choices=TYPE_CHOICES)
 
-    # question = models.ForeignKey(
-    #     'Question', on_delete=models.SET_NULL, null=True, related_name='+', blank=True)
 
     def __str__(self) -> str:
         return self.title
@@ -141,15 +129,6 @@ class Question(models.Model):
 class RightAnswer(models.Model):
     questions = models.ForeignKey(Question, on_delete=models.CASCADE)
     answers = models.ManyToManyField(Answer)
-
-    # def __str__(self) -> str:
-    #     return self.questions.id
-
-    # class Meta:
-    #     ordering = ['questions']
-    # class Meta:
-    #     unique_together = [['question', 'answer']]
-
 
 class Person(models.Model):
     phone = models.CharField(max_length=255)
@@ -240,5 +219,4 @@ class Result(models.Model):
 
 class Image(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE,null= True, related_name='images')
-    # student = models.OneToOneField(Student, on_delete=models.CASCADE,null= True, related_name='image')
     image = models.ImageField(upload_to='exam/images')
