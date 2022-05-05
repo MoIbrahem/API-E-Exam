@@ -1,19 +1,9 @@
-from asyncore import read
-from decimal import Decimal
-from pyexpat import model
-from statistics import mode
-from time import time
 from django.db import transaction
-from rest_framework import fields, serializers
-import datetime
+from rest_framework import serializers
 from django.utils import timezone
-# from .signals import order_created
-# from core.serializers import *
-# from core.models import *
 from .models import *
 import random
 from itertools import chain
-from collections import OrderedDict
 import json
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -229,30 +219,3 @@ class ResultSerializer(serializers.ModelSerializer):
         model = Result
         fields = ['exam', 'student' ,'degree', 'total', 'score', 'ranking']
         read_only_fields = ['degree', 'total', 'score']
-
-# class GetSpecificResultSerializer(serializers.Serializer):
-#     exam__id = serializers.IntegerField()
-#     def save(self, **kwargs):
-#         exam__id = self.validated_data['exam__id']
-#         user = Person.objects.get(user_id=self.context['user_id'])
-#         user_is_staff = self.context['is_staff']
-#         if self.context['is_staff']:
-#             sub = Exam.objects.only('subject').get(id=exam__id)
-#             sub = Subject.objects.get(id=sub.id)
-#             prof = Professor.objects.get(subjects=sub)
-#             if user.id == prof.id:
-#                 return Result.objects.filter(exam_id=exam__id)
-#         return Result.objects.filter(exam_id=exam__id, student= user)
-
-#     def validate_exam__id(self, exam__id):
-#         timenow = timezone.now()
-#         print(timenow)
-
-#         if not Exam.objects.filter(pk=exam__id).exists():
-#             raise serializers.ValidationError(
-#                 'No exam with the given ID was found.')
-#         if Exam.objects.filter(id=exam__id).count() == 0:
-#             raise serializers.ValidationError('The exam is empty.')
-#         if Exam.objects.only('starts_at').get(id=exam__id).starts_at > timenow:
-#             raise serializers.ValidationError('The exam has not started yet.')
-#         return exam__id 

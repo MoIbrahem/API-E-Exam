@@ -1,7 +1,3 @@
-from operator import truediv
-from venv import create
-from rest_framework import response
-from exam import pagination
 from exam.permissions import FullDjangoModelPermissions, IsAdminOrReadOnly, ViewStudentHistoryPermission
 from exam.pagination import DefaultPagination
 from django.db.models.aggregates import Count
@@ -13,16 +9,13 @@ from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, RetrieveM
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny, \
     DjangoModelPermissions, DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 from .filters import *
 from .models import Exam, RightAnswer, Student, Subject, Department, Level
 from .serializers import *
-from model_utils.managers import InheritanceQuerySet
-import requests
 from django.shortcuts import render
 
-from exam import filters
 
 
 # Create your views here.

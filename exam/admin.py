@@ -1,6 +1,4 @@
-from pyexpat import model
-from django.contrib import admin, messages
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib import admin
 from django.db.models.aggregates import Count
 from django.db.models.query import QuerySet
 from django.utils.html import format_html, urlencode

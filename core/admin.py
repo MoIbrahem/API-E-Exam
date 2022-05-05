@@ -1,8 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.contenttypes.admin import GenericTabularInline
 from .models import User
-from . import models
+
 
 # Register your models here.
 @admin.register(User)

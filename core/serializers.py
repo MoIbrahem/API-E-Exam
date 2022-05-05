@@ -1,12 +1,7 @@
-import profile
-from django.db.models import fields
-from django.db.models.base import Model
-from exam.models import Person ,Professor,Student
 from djoser.serializers import UserSerializer as BaseUserSerializer, UserCreateSerializer as BaseUserCreateSerializer
-from rest_framework import serializers
 from .models import *
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.db import IntegrityError, transaction
+
 
 
 
