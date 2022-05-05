@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'exam',
     'guardian',
     'core',
+    'django_extensions',
 
     
 ]
