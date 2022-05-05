@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'guardian',
     'core',
     'django_extensions',
+    'drf_yasg',
 
     
 ]
@@ -161,7 +162,7 @@ DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
     'SERIALIZERS': {
         'user_create': 'core.serializers.UserCreateSerializer',
-        'current_user': 'core.serializers.UserSerializer',
+        'current_user': 'core.serializers.UserSerializerDAB',
     },
     'EMAIL' : {
         'password_reset': 'djoser.email.PasswordResetEmail',
