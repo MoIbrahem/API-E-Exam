@@ -1,3 +1,4 @@
+from re import S
 from django.db import transaction
 from rest_framework import serializers
 from django.utils import timezone
@@ -199,7 +200,8 @@ class CheckRightAnswerSerializer(ValidationSerializer):
             
             print(degree)
             score = (degree/count)*100
-            Student.objects.filter(id = student.id).update(score = score)
+            
+            Student.objects.filter(id = student.id).update(score = student.score + score)
             Result.objects.create(exam_id=exam__id, student = student, degree = degree, total = count ,score=score)
             return Result.objects.filter(exam_id=exam__id, student= student)
 
