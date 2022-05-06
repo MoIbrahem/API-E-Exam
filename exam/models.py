@@ -132,7 +132,7 @@ class Person(models.Model):
 class Student(Person):
     level = models.ForeignKey(Level,on_delete=models.PROTECT, null=True,related_name='student_level')
     department = models.ForeignKey(Department,on_delete=models.PROTECT, null=True, related_name='student_department')
-    score = models.IntegerField(validators=[MinValueValidator(0)])
+    score = models.IntegerField(validators=[MinValueValidator(0)], default= 0)
     
     @property 
     def overall_level_rank(self, *args, **kwargs):
