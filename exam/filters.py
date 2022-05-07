@@ -17,5 +17,5 @@ class ResultFilter(FilterSet):
         model = Result
         fields = {
         'exam__subject': ['exact'],
-        'degree': ['gt', 'lt']
+        'score': ['gt', 'lt']
     }

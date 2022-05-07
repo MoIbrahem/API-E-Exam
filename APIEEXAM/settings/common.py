@@ -158,10 +158,20 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'core.User'
 
+(DOMAIN)= ('example.com')
+(SITE_NAME)= ('E-Exam')
+
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    # 'USER_CREATE_PASSWORD_RETYPE': True,
+    'SET_PASSWORD_RETYPE': True,
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
+    'SEND_CONFIRMATION_EMAIL': True,
+    'PASSWORD_RESET_CONFIRM_RETYPE': True,
+    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
     'SERIALIZERS': {
         'user_create': 'core.serializers.UserCreateSerializer',
+        'user': 'core.serializers.UserCreateSerializer',
         'current_user': 'core.serializers.UserSerializerDAB',
     },
     'EMAIL' : {
@@ -173,4 +183,9 @@ DJOSER = {
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1)
+}
+
+DJANGO_TEMPLATED_MAIL = {
+    'DOMAIN': 'example.com',
+    'SITE_NAME': 'Foo Website'
 }
