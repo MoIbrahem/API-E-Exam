@@ -158,7 +158,7 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'core.User'
 
-(DOMAIN)= ('example.com')
+
 (SITE_NAME)= ('E-Exam')
 
 DJOSER = {
