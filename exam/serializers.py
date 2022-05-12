@@ -1,5 +1,6 @@
 from re import S
 from django.db import transaction
+from django.db.models import Prefetch
 from pyparsing import null_debug_action
 from rest_framework import serializers
 from django.utils import timezone
@@ -93,10 +94,10 @@ class CreateExamQuestionSerializer(ValidationSerializer):
                 i +=1
                 
             print(quantity)
-            print(output)
+            # print(output)
             return output
         
-        queryset = []
+        Qqueryset = []
         for eq in eqs.iterator():
             # print(eq)
             quantity = eq.quantity
@@ -104,18 +105,19 @@ class CreateExamQuestionSerializer(ValidationSerializer):
             difficulty = eq.difficulty_id
             type = eq.type_id
             quantity = eq.quantity
-            query = questions.filter(chapter_id=chapter, difficulty_id=difficulty, type_id=type)
-
+            # query = questions.filter(chapter_id=chapter, difficulty_id=difficulty, type_id=type)
+            query = questions.prefetch_related(Prefetch('answer',
+                    queryset=Answer.objects.order_by('?'))).filter(chapter_id=chapter, difficulty_id=difficulty, type_id=type)
         
             nops = len(query) #// number of obtions available to random from
             if nops != 0 :
-                if len(queryset) > 0:
-                    queryset[0] = chain(queryset[0], randomquestions(query, quantity, nops))
+                if len(Qqueryset) > 0:
+                    Qqueryset[0] = chain(Qqueryset[0], randomquestions(query, quantity, nops))
                 else:
-                    queryset.append(randomquestions(query, quantity, nops))       
+                    Qqueryset.append(randomquestions(query, quantity, nops))       
        
-        if len(queryset)> 0:
-            return queryset[0] 
+        if len(Qqueryset)> 0:
+            return Qqueryset[0] 
         else:
            raise serializers.ValidationError('The exam is empty, contact your professsor for lack of questions')   
         
