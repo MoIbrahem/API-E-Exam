@@ -154,7 +154,17 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = ['id', 'user_id' , 'phone', 'birth_date','level','department','score','overall_level_rank']
         read_only_fields = ['score']
-        
+
+class StudentGetSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(read_only=True)
+    overall_level_rank = serializers.IntegerField(read_only=True)
+    department = departmentSerializer()
+    level = levelSerializer()
+
+    class Meta:
+        model = Student
+        fields = ['id', 'user_id' , 'phone', 'birth_date','level','department','score','overall_level_rank']
+        read_only_fields = ['score']       
 
 class RightAnswerSerializer(serializers.ModelSerializer):
     

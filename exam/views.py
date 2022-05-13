@@ -34,7 +34,7 @@ class StudentViewSet(ModelViewSet):
         student = self.queryset.get(
             user_id=request.user.id)
         if request.method == 'GET':
-            serializer = StudentSerializer(student)
+            serializer = StudentGetSerializer(student)
             return Response(serializer.data)
         elif request.method == 'PUT':
             serializer = StudentSerializer(student, data=request.data)
