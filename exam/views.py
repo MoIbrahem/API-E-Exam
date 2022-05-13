@@ -177,3 +177,20 @@ class QuestionImageViewSet(ModelViewSet):
 
     def get_queryset(self):
         return Image.objects.filter(question_id=self.kwargs['question_pk'])
+
+class LevelViewSet(ModelViewSet):
+    serializer_class = levelSerializer
+    queryset = Level.objects.all()
+
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE','POST']:
+            return [IsAdminUser()]
+        return [IsAuthenticatedOrReadOnly()]
+
+class DepartmentViewSet(ModelViewSet):
+    serializer_class = departmentSerializer
+    queryset = Department.objects.all()
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE','POST']:
+            return [IsAdminUser()]
+        return [IsAuthenticatedOrReadOnly()]

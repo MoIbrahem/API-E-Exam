@@ -12,6 +12,8 @@ router.register('exams', views.ExamViewSet,basename='exams')
 router.register('examquestions', views.ExamQuestionViewSet, basename='examquestions')
 router.register('rightanswers', views.RightAnswerViewSet,basename='rightanswers')
 router.register('results', views.ResultViewSet,basename='results')
+router.register('levels', views.LevelViewSet,basename='levels')
+router.register('departments', views.DepartmentViewSet,basename='departments')
 
 
 examquestions_router = routers.NestedDefaultRouter(

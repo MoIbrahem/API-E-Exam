@@ -30,12 +30,12 @@ class QuestionImageSerializer(serializers.ModelSerializer):
 class departmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
-        fields = ['title']
+        fields = ['id','title']
 
 class levelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Level
-        fields = ['title']
+        fields = ['id','title']
 
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -147,8 +147,8 @@ class SimpleExamSerializer(serializers.ModelSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(read_only=True)
     overall_level_rank = serializers.IntegerField(read_only=True)
-    department = departmentSerializer()
-    level = levelSerializer()
+    # department = departmentSerializer()
+    # level = levelSerializer()
 
     class Meta:
         model = Student
