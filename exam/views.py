@@ -56,7 +56,7 @@ class ExamViewSet(ModelViewSet):
     def get_permissions(self):
         if self.request.method in ['PATCH', 'DELETE']:
             return [IsAdminUser()]
-        return [IsAuthenticatedOrReadOnly()]
+        return [IsAuthenticated()]
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -86,7 +86,7 @@ class ExamQuestionViewSet(ModelViewSet):
     def get_permissions(self):
         if self.request.method in ['DELETE']:
             return [IsAdminUser()]
-        return [IsAuthenticatedOrReadOnly()]
+        return [IsAuthenticated()]
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -119,7 +119,7 @@ class RightAnswerViewSet(ModelViewSet):
     def get_permissions(self):
         if self.request.method in ['DELETE']:
             return [IsAdminUser()]
-        return [IsAuthenticatedOrReadOnly()]
+        return [IsAuthenticated()]
 
     
 
@@ -156,7 +156,7 @@ class ResultViewSet(ModelViewSet):
     def get_permissions(self):
         if self.request.method in ['PATCH', 'DELETE','POST']:
             return [IsAdminUser()]
-        return [IsAuthenticatedOrReadOnly()]
+        return [IsAuthenticated()]
 
     def get_queryset(self):
 
@@ -185,7 +185,7 @@ class LevelViewSet(ModelViewSet):
     def get_permissions(self):
         if self.request.method in ['PATCH', 'DELETE','POST']:
             return [IsAdminUser()]
-        return [IsAuthenticatedOrReadOnly()]
+        return [IsAuthenticated()]
 
 class DepartmentViewSet(ModelViewSet):
     serializer_class = departmentSerializer
@@ -193,4 +193,31 @@ class DepartmentViewSet(ModelViewSet):
     def get_permissions(self):
         if self.request.method in ['PATCH', 'DELETE','POST']:
             return [IsAdminUser()]
-        return [IsAuthenticatedOrReadOnly()]
+        return [IsAuthenticated()]
+
+class SubjectViewSet(ModelViewSet):
+    http_method_names = ['get', 'patch', 'delete', 'head', 'options']
+    serializer_class = SubjectSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+
+    search_fields = ['title']
+
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
+
+
+    def get_queryset(self):
+
+        user = self.request.user
+
+        if user.is_staff:
+            return Subject.objects.all()
+
+        student_id = Student.objects.only('id').get(user_id=user.id)
+
+        level_id = Level.objects.only('id').get(student_level=student_id)
+        department_id = Department.objects.only('id').get(student_department=student_id)
+
+        return  Subject.objects.filter(level=level_id, departments=department_id)
