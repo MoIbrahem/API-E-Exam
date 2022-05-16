@@ -81,7 +81,7 @@ class ExamViewSet(ModelViewSet):
             return Exam.objects.select_related('subject').filter(subject_id__in=subjects)
             
         else:
-            raise serializers.ValidationError('please update your profile to show exams')
+            raise serializers.ValidationError('please update your student profile (level and department) to show exams')
             
 
 
