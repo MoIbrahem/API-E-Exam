@@ -67,15 +67,22 @@ class ExamViewSet(ModelViewSet):
 
         if user.is_staff:
             return Exam.objects.all()
+        
+        student = Student.objects.get(user_id=user.id)
 
-        student_id = Student.objects.only('id').get(user_id=user.id)
+        if(student.level and student.department):
+            student_id = Student.objects.only('id').get(user_id=user.id)
 
-        level_id = Level.objects.only('id').get(student_level=student_id)
-        department_id = Department.objects.only('id').get(student_department=student_id)
+            level_id = Level.objects.only('id').get(student_level=student_id)
+            department_id = Department.objects.only('id').get(student_department=student_id)
+        
+            subjects = Subject.objects.only('id').filter(level=level_id, departments=department_id)
 
-        subjects = Subject.objects.only('id').filter(level=level_id, departments=department_id)
-
-        return Exam.objects.select_related('subject').filter(subject_id__in=subjects)
+            return Exam.objects.select_related('subject').filter(subject_id__in=subjects)
+            
+        else:
+            raise serializers.ValidationError('please update your profile to show exams')
+            
 
 
 class ExamQuestionViewSet(ModelViewSet):
