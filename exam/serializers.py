@@ -235,6 +235,7 @@ class CheckRightAnswerSerializer(ValidationSerializer):
 
 class ResultSerializer(serializers.ModelSerializer):
     ranking = serializers.IntegerField(read_only = True)
+    exam = ExamSerializer()
     class Meta:
         model = Result
         fields = ['exam', 'student' ,'degree', 'total', 'score', 'ranking']
