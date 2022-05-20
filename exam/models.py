@@ -76,9 +76,20 @@ class Type(models.Model):
         (TYPE_TRUE_OR_FALSE, 'True or false'),
         (TYPE_MCQ, 'MCQ'),
     ]
+    
+    INPUT_RADIO = 'radio'
+    INPUT_VHECK_BOX = 'checkbox'
+
+    INPUT_CHOICES = [
+        (INPUT_RADIO, 'radio'),
+        (INPUT_VHECK_BOX, 'checkbox'),
+    ]
 
     title = models.CharField(
         max_length=3, choices=TYPE_CHOICES)
+    
+    inputType = models.CharField(
+        max_length=8, choices=INPUT_CHOICES)
 
 
     def __str__(self) -> str:

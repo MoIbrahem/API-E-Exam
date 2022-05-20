@@ -138,7 +138,7 @@ class DifficultyAdmin(admin.ModelAdmin):
 
 @admin.register(models.Type)
 class TypeAdmin(admin.ModelAdmin):
-    list_display = ['title']
+    list_display = ['title','inputType']
     search_fields = ['title']
 
 

@@ -17,7 +17,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 class TypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Type
-        fields = ['title']
+        fields = ['title','inputType']
 
 class QuestionImageSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
