@@ -45,7 +45,7 @@ class StudentViewSet(ModelViewSet):
 
 class ExamViewSet(ModelViewSet):
     http_method_names = ['get', 'patch', 'delete', 'head', 'options']
-    pagination_class = DefaultPagination
+    # pagination_class = DefaultPagination
     serializer_class = ExamSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
 
@@ -88,7 +88,7 @@ class ExamViewSet(ModelViewSet):
 class ExamQuestionViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'delete', 'head', 'options']
 
-    pagination_class = DefaultPagination
+    # pagination_class = DefaultPagination
 
     def get_permissions(self):
         if self.request.method in ['DELETE']:
@@ -153,7 +153,7 @@ class RightAnswerViewSet(ModelViewSet):
         return []
 
 class ResultViewSet(ModelViewSet):
-    pagination_class = DefaultPagination
+    # pagination_class = DefaultPagination
     serializer_class = ResultSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     
