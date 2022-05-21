@@ -20,6 +20,9 @@ class PersonAdmin(admin.ModelAdmin):
     list_per_page = 10
     autocomplete_fields = [ 'user']
 
+    # To hide this model from admin panel bar
+    def get_model_perms(self, request):
+        return {}
 
     
 
@@ -99,9 +102,6 @@ class LevelAdmin(admin.ModelAdmin):
 #         if self.value() == '=1':
 #             return queryset.filter(id__exact=1)
 
-
-
-
 @admin.register(models.Department)
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = ['title', 'level']
@@ -138,11 +138,17 @@ class DifficultyAdmin(admin.ModelAdmin):
     list_display = ['title']
     search_fields = ['title']
 
+    def get_model_perms(self, request):
+        return {}
+
 
 @admin.register(models.Type)
 class TypeAdmin(admin.ModelAdmin):
     list_display = ['title','inputType']
     search_fields = ['title']
+
+    def get_model_perms(self, request):
+        return {}
 
 
 class AnswerInline(admin.TabularInline):
@@ -153,6 +159,9 @@ class AnswerInline(admin.TabularInline):
 class AnswerAdmin(admin.ModelAdmin):
     autocomplete_fields = ['question']
     search_fields = ['title']
+
+    def get_model_perms(self, request):
+        return {}
 
 class RightAnswerInline(admin.TabularInline):
     extra = 1
@@ -171,6 +180,9 @@ class QuestionImageInline(admin.TabularInline):
 @admin.register(models.RightAnswer)
 class RightAnswerAdmin(admin.ModelAdmin):
     autocomplete_fields = ['answers']
+
+    def get_model_perms(self, request):
+        return {}
 
 @admin.register(models.Question)
 class QuestinAdmin(admin.ModelAdmin):
