@@ -20,9 +20,7 @@ class PersonAdmin(admin.ModelAdmin):
     list_per_page = 10
     autocomplete_fields = [ 'user']
 
-    # To hide this model from admin panel bar
-    def get_model_perms(self, request):
-        return {}
+    
 
     
 
@@ -181,8 +179,6 @@ class QuestionImageInline(admin.TabularInline):
 class RightAnswerAdmin(admin.ModelAdmin):
     autocomplete_fields = ['answers']
 
-    def get_model_perms(self, request):
-        return {}
 
 @admin.register(models.Question)
 class QuestinAdmin(admin.ModelAdmin):
