@@ -4,7 +4,7 @@ from django.db import models
 
 
 class Level(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, verbose_name="Level Name")
     placed_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
@@ -15,7 +15,7 @@ class Level(models.Model):
 
 
 class Department(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, verbose_name="Department Name")
     levels = models.ManyToManyField(Level, related_name='departments')
 
     def __str__(self) -> str:
@@ -25,7 +25,7 @@ class Department(models.Model):
         ordering = ['title']
 
 class Chapter(models.Model):
-    title = models.CharField(max_length=255)    
+    title = models.CharField(max_length=255, verbose_name="Chapter Name")    
     def __str__(self) -> str:
         return self.title
 
@@ -33,7 +33,7 @@ class Chapter(models.Model):
         ordering = ['title']
 
 class Subject(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, verbose_name="Subject Name")
     slug = models.SlugField()
     description = models.TextField(null=True, blank=True)
     hours = models.IntegerField(validators=[MinValueValidator(1)])
@@ -59,7 +59,7 @@ class Difficulty(models.Model):
     ]
 
     title = models.CharField(
-        max_length=1, choices=DEFICULTY_CHOICES, default=DEFICULTY_MEDIUM)
+        max_length=1, choices=DEFICULTY_CHOICES, default=DEFICULTY_MEDIUM, verbose_name="Difficulty Degree")
 
 
     def __str__(self) -> str:
@@ -86,7 +86,7 @@ class Type(models.Model):
     ]
 
     title = models.CharField(
-        max_length=3, choices=TYPE_CHOICES)
+        max_length=3, choices=TYPE_CHOICES, verbose_name="Type")
     
     inputType = models.CharField(
         max_length=8, choices=INPUT_CHOICES)
@@ -100,7 +100,7 @@ class Type(models.Model):
 
 
 class Answer(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, verbose_name="Answer")
 
     def __str__(self) -> str:
         return self.title
@@ -110,7 +110,7 @@ class Answer(models.Model):
 
 
 class Question(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, verbose_name="Question")
     chapter = models.ForeignKey(Chapter, on_delete=models.PROTECT)
     difficulty = models.ForeignKey(Difficulty, on_delete=models.PROTECT)
     type = models.ForeignKey(Type, on_delete=models.PROTECT)
@@ -173,7 +173,7 @@ class Professor(Person):
 
 
 class Exam(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, verbose_name="Exam Name")
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     starts_at = models.DateTimeField(blank=True)
