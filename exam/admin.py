@@ -20,6 +20,9 @@ class PersonAdmin(admin.ModelAdmin):
     list_per_page = 10
     autocomplete_fields = [ 'user']
 
+    # To hide this model from admin panel bar
+    def get_model_perms(self, request):
+        return {}
 
     
 
@@ -66,6 +69,7 @@ class StudentAdmin(PersonAdmin):
 @admin.register(models.Level)
 class LevelAdmin(admin.ModelAdmin):
     list_display = ['title', 'placed_at', 'departments_number']
+    ordering = ['title', 'placed_at']
     search_fields = ['title']
     list_filter = ['title']
     autocomplete_fields = ['departments']
@@ -98,12 +102,10 @@ class LevelAdmin(admin.ModelAdmin):
 #         if self.value() == '=1':
 #             return queryset.filter(id__exact=1)
 
-
-
-
 @admin.register(models.Department)
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = ['title', 'level']
+    ordering = ['title']
     search_fields = ['title']
     autocomplete_fields = ['levels']
     # list_filter = ['title', FilterByLevel]
@@ -115,6 +117,7 @@ class DepartmentAdmin(admin.ModelAdmin):
 @admin.register(models.Chapter)
 class ChapterAdmin(admin.ModelAdmin):
     list_display = ['title', 'subjects_n']
+    ordering = ['title']
     search_fields = ['title']
     list_filter = ['subjects']
     @admin.display(ordering='subjects')
@@ -135,11 +138,17 @@ class DifficultyAdmin(admin.ModelAdmin):
     list_display = ['title']
     search_fields = ['title']
 
+    def get_model_perms(self, request):
+        return {}
+
 
 @admin.register(models.Type)
 class TypeAdmin(admin.ModelAdmin):
     list_display = ['title','inputType']
     search_fields = ['title']
+
+    def get_model_perms(self, request):
+        return {}
 
 
 class AnswerInline(admin.TabularInline):
@@ -150,6 +159,9 @@ class AnswerInline(admin.TabularInline):
 class AnswerAdmin(admin.ModelAdmin):
     autocomplete_fields = ['question']
     search_fields = ['title']
+
+    def get_model_perms(self, request):
+        return {}
 
 class RightAnswerInline(admin.TabularInline):
     extra = 1
@@ -169,10 +181,14 @@ class QuestionImageInline(admin.TabularInline):
 class RightAnswerAdmin(admin.ModelAdmin):
     autocomplete_fields = ['answers']
 
+    def get_model_perms(self, request):
+        return {}
+
 @admin.register(models.Question)
 class QuestinAdmin(admin.ModelAdmin):
     inlines = [RightAnswerInline, QuestionImageInline]  # , AnswerInline]
     list_display = ['title', 'answers', 'chapter', 'subject', 'type', 'difficulty']
+    ordering = ['title', 'chapter', 'subject', 'type', 'difficulty']
     search_fields = ['title','chapter','subject','type','difficulty']
     list_filter = ['subject', 'chapter', 'difficulty', 'type']
     autocomplete_fields = ['answer', 'chapter','subject','type','difficulty']
@@ -189,6 +205,7 @@ class QuestinAdmin(admin.ModelAdmin):
 class SubjectAdmin(GuardedModelAdmin):
 
     list_display = ['title', 'department', 'level', 'professors', 'hours', 'question_count', 'exams_count']
+    ordering = ['title', 'hours']
     search_fields = ['title']
     list_filter = ['level', 'departments', 'hours']
     prepopulated_fields = {
@@ -260,6 +277,7 @@ class ExamQustionInline(admin.TabularInline):
 class ExamAdmin(admin.ModelAdmin):
     inlines = [ExamQustionInline]
     list_display = ['title', 'subject', 'created_at', 'starts_at', 'ends_at']
+    ordering = ['title', 'subject', 'created_at', 'starts_at']
     search_fields = ['title', 'subject', 'created_at']
     list_filter = ['subject', 'created_at']
     autocomplete_fields = ['subject']
@@ -268,5 +286,6 @@ class ExamAdmin(admin.ModelAdmin):
 @admin.register(models.Result)
 class ResultAdmin(admin.ModelAdmin):
     list_display = ['exam', 'student', 'degree','total', 'score','ranking']
+    ordering = ['exam', 'student', 'degree','total', 'score']
     search_fields = ['title', 'subject', 'created_at']
     list_filter = ['exam', 'student', 'degree']
