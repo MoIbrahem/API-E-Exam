@@ -283,9 +283,43 @@ class ExamAdmin(admin.ModelAdmin):
     autocomplete_fields = ['subject']
 
 
+class GradeFilter(admin.SimpleListFilter):
+    title = 'Grade'
+    parameter_name = 'Grade'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('score<50', 'F'),
+            ('50<=score<=64', 'D'),
+            ('65<=score<=69', 'C'),
+            ('70<=score<=74', 'C+'),
+            ('75<=score<=79', 'B'),
+            ('80<=score<=84', 'B+'),
+            ('85<=score<=89', 'A'),
+            ('90<=score<=100', 'A+'),
+        ]
+
+    def queryset(self, request, queryset: QuerySet):
+        if self.value() == 'score<50':
+            return queryset.filter(score__lt=50)
+        if self.value() == '50<=score<=64':
+            return queryset.filter(score__range=(50, 64))
+        if self.value() == '65<=score<=69':
+            return queryset.filter(score__range=(65, 69))
+        if self.value() == '70<=score<=74':
+            return queryset.filter(score__range=(70, 74))
+        if self.value() == '75<=score<=79':
+            return queryset.filter(score__range=(75, 79))
+        if self.value() == '80<=score<=84':
+            return queryset.filter(score__range=(80, 84))
+        if self.value() == '85<=score<=89':
+            return queryset.filter(score__range=(85, 89))
+        if self.value() == '90<=score<=100':
+            return queryset.filter(score__range=(90, 100))
+
 @admin.register(models.Result)
 class ResultAdmin(admin.ModelAdmin):
     list_display = ['exam', 'student', 'degree','total', 'score','ranking']
     ordering = ['exam', 'student', 'degree','total', 'score']
     search_fields = ['title', 'subject', 'created_at']
-    list_filter = ['exam', 'student', 'degree']
+    list_filter = ['exam', GradeFilter]
