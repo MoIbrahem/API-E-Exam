@@ -17,6 +17,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['first_name'] = user.first_name
         token['last_name'] = user.last_name
         token['user_id'] = user.id
+        token['profile_type'] = user.profile_type
+        token['is_staff'] = user.is_staff
         # ...
 
         return token
@@ -34,4 +36,4 @@ class UserCreateSerializer(BaseUserCreateSerializer):
 
 class UserSerializerDAB(BaseUserSerializer):
     class Meta(BaseUserSerializer.Meta):
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile_type']
