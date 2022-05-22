@@ -211,7 +211,7 @@ class CheckRightAnswerSerializer(ValidationSerializer):
             degree = 0
             count = 0
             for item in range(len(answersheet)):
-                if answersheet[item] == student_answer[item]:
+                if sorted(answersheet[item].get('answers')) == sorted(student_answer[item].get('answers')):
                     degree += 1
                 count += 1
                 #.
