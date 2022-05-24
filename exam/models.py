@@ -100,7 +100,7 @@ class Type(models.Model):
 
 
 class Answer(models.Model):
-    title = models.CharField(max_length=255, verbose_name="Answer")
+    title = models.CharField(max_length=255, verbose_name="Answer",unique= True)
 
     def __str__(self) -> str:
         return self.title
