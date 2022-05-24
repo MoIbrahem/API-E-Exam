@@ -177,8 +177,11 @@ class QuestionImageInline(admin.TabularInline):
 
 @admin.register(models.RightAnswer)
 class RightAnswerAdmin(admin.ModelAdmin):
+    list_display = ['questions', 'rightanswers']
     autocomplete_fields = ['answers']
-
+    
+    def rightanswers(self, obj):
+        return "\n / ".join([p.title for p in obj.answers.all()])
 
 @admin.register(models.Question)
 class QuestinAdmin(admin.ModelAdmin):
