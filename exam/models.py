@@ -127,6 +127,7 @@ class Question(models.Model):
 class RightAnswer(models.Model):
     questions = models.ForeignKey(Question, on_delete=models.CASCADE)
     answers = models.ManyToManyField(Answer)
+    
 
 class Person(models.Model):
     phone = models.CharField(max_length=255)
@@ -134,6 +135,8 @@ class Person(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.user.first_name} {self.user.last_name}'
 
     class Meta:
         ordering = ['user__first_name', 'user__last_name']
