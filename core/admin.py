@@ -12,3 +12,4 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('username', 'password1', 'password2', 'email', 'first_name', 'last_name', 'profile_type'),
         }),
     )
+    list_filter = ['profile_type', 'is_staff', 'is_superuser', 'is_active']
