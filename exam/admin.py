@@ -233,9 +233,9 @@ class QuestinAdmin(admin.ModelAdmin):
 
 class QustionInline(admin.TabularInline):
     autocomplete_fields = ['chapter', 'difficulty', 'type','answer']
-    show_change_link: True
     extra = 1
     model = models.Question
+    show_change_link: True
 
 @admin.register(models.Subject)
 class SubjectAdmin(GuardedModelAdmin):
