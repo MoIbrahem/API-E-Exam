@@ -64,6 +64,11 @@ class StudentAdmin(PersonAdmin):
             results_number=Count('results')
         )
     
+    def get_model_perms(self, request):
+        if request.user.is_superuser:
+            return super().get_queryset(request)
+        else:
+            return {}
 
 @admin.register(models.Level)
 class LevelAdmin(admin.ModelAdmin):
@@ -129,6 +134,11 @@ class ChapterAdmin(admin.ModelAdmin):
         }))
         return format_html('<a href="{}">{} </a>', url, "\n".join([subject.title for subject in chapter.subjects.all()]))
 
+    def get_model_perms(self, request):
+        if request.user.is_superuser:
+            return super().get_queryset(request)
+        else:
+            return {}
 
 
 
@@ -160,12 +170,17 @@ class AnswerAdmin(admin.ModelAdmin):
     search_fields = ['title']
 
     def get_model_perms(self, request):
-        return {}
+        if request.user.is_superuser:
+            return super().get_queryset(request)
+        else:
+            return {}
 
 class RightAnswerInline(admin.TabularInline):
     extra = 1
     model = models.RightAnswer
     autocomplete_fields = ['answers']
+    
+
 
 class QuestionImageInline(admin.TabularInline):
     model = models.Image
@@ -183,7 +198,11 @@ class RightAnswerAdmin(admin.ModelAdmin):
     
     def rightanswers(self, obj):
         return "\n / ".join([p.title for p in obj.answers.all()])
-
+    def get_model_perms(self, request):
+        if request.user.is_superuser:
+            return super().get_queryset(request)
+        else:
+            return {}
 @admin.register(models.Question)
 class QuestinAdmin(admin.ModelAdmin):
     inlines = [RightAnswerInline, QuestionImageInline]  # , AnswerInline]
@@ -200,6 +219,11 @@ class QuestinAdmin(admin.ModelAdmin):
             'all': ['exam/style.css']
         }
 
+    def get_model_perms(self, request):
+        if request.user.is_superuser:
+            return super().get_queryset(request)
+        else:
+            return {}
 
 @admin.register(models.Subject)
 class SubjectAdmin(GuardedModelAdmin):
@@ -248,7 +272,7 @@ class SubjectAdmin(GuardedModelAdmin):
             return super().get_queryset(request)
         data = self.get_model_objects(request)
         return data
-        
+
     def get_model_objects(self, request, action=None, klass=None):
         opts = self.opts
         actions = [action] if action else ['view','edit','delete']
@@ -298,6 +322,11 @@ class ExamAdmin(admin.ModelAdmin):
         }))
         return format_html('<a href="{}">{} results</a>', url, exam.exam.count())
 
+    def get_model_perms(self, request):
+        if request.user.is_superuser:
+            return super().get_queryset(request)
+        else:
+            return {}
 
 
 class GradeFilter(admin.SimpleListFilter):
@@ -340,3 +369,9 @@ class ResultAdmin(admin.ModelAdmin):
     ordering = ['exam', 'student', 'degree','total', 'score']
     search_fields = ['title', 'subject', 'created_at']
     list_filter = ['exam', GradeFilter]
+
+    def get_model_perms(self, request):
+        if request.user.is_superuser:
+            return super().get_queryset(request)
+        else:
+            return {}
