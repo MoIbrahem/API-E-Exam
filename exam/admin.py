@@ -218,7 +218,7 @@ class QuestinAdmin(admin.ModelAdmin):
     list_filter = ['subject', 'chapter', 'difficulty', 'type']
     autocomplete_fields = ['answer', 'chapter','subject','type','difficulty']
     def answers(self, obj):
-        return "\n".join([answer.title for answer in obj.answer.all()])
+        return "\n / ".join([answer.title for answer in obj.answer.all()])
 
     class Media:
         css = {
