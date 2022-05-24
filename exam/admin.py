@@ -243,6 +243,12 @@ class SubjectAdmin(GuardedModelAdmin):
             return True
         return self.get_model_objects(request).exists()
 
+    def get_queryset(self, request):
+        if request.user.is_superuser:
+            return super().get_queryset(request)
+        data = self.get_model_objects(request)
+        return data
+        
     def get_model_objects(self, request, action=None, klass=None):
         opts = self.opts
         actions = [action] if action else ['view','edit','delete']
