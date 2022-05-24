@@ -231,6 +231,12 @@ class QuestinAdmin(admin.ModelAdmin):
         else:
             return False
 
+class QustionInline(admin.TabularInline):
+    autocomplete_fields = ['chapter', 'difficulty', 'type','answer']
+    show_change_link: True
+    extra = 1
+    model = models.Question
+
 @admin.register(models.Subject)
 class SubjectAdmin(GuardedModelAdmin):
 
@@ -241,6 +247,7 @@ class SubjectAdmin(GuardedModelAdmin):
     prepopulated_fields = {
         'slug': ['title']
     }
+    inlines = [QustionInline]
     autocomplete_fields = ['level', 'departments','chapters']
 
     def professors(self, obj):

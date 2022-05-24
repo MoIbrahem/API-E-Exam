@@ -125,7 +125,7 @@ class Question(models.Model):
 
 
 class RightAnswer(models.Model):
-    questions = models.ForeignKey(Question, on_delete=models.CASCADE)
+    questions = models.ForeignKey(Question, on_delete=models.CASCADE,related_name="rightanswers")
     answers = models.ManyToManyField(Answer)
     
 
