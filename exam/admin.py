@@ -64,11 +64,11 @@ class StudentAdmin(PersonAdmin):
             results_number=Count('results')
         )
     
-    def get_model_perms(self, request):
+    def has_module_permission(self, request):
         if request.user.is_superuser:
-            return super().get_queryset(request)
+            return True
         else:
-            return {}
+            return False
 
 @admin.register(models.Level)
 class LevelAdmin(admin.ModelAdmin):
@@ -134,11 +134,11 @@ class ChapterAdmin(admin.ModelAdmin):
         }))
         return format_html('<a href="{}">{} </a>', url, "\n".join([subject.title for subject in chapter.subjects.all()]))
 
-    def get_model_perms(self, request):
+    def has_module_permission(self, request):
         if request.user.is_superuser:
-            return super().get_queryset(request)
+            return True
         else:
-            return {}
+            return False
 
 
 
@@ -147,8 +147,11 @@ class DifficultyAdmin(admin.ModelAdmin):
     list_display = ['title']
     search_fields = ['title']
 
-    def get_model_perms(self, request):
-        return {}
+    def has_module_permission(self, request):
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
 
 
 @admin.register(models.Type)
@@ -156,8 +159,11 @@ class TypeAdmin(admin.ModelAdmin):
     list_display = ['title','inputType']
     search_fields = ['title']
 
-    def get_model_perms(self, request):
-        return {}
+    def has_module_permission(self, request):
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
 
 
 class AnswerInline(admin.TabularInline):
@@ -169,11 +175,11 @@ class AnswerAdmin(admin.ModelAdmin):
     autocomplete_fields = ['question']
     search_fields = ['title']
 
-    def get_model_perms(self, request):
+    def has_module_permission(self, request):
         if request.user.is_superuser:
-            return super().get_queryset(request)
+            return True
         else:
-            return {}
+            return False
 
 class RightAnswerInline(admin.TabularInline):
     extra = 1
@@ -198,11 +204,11 @@ class RightAnswerAdmin(admin.ModelAdmin):
     
     def rightanswers(self, obj):
         return "\n / ".join([p.title for p in obj.answers.all()])
-    def get_model_perms(self, request):
+    def has_module_permission(self, request):
         if request.user.is_superuser:
-            return super().get_queryset(request)
+            return True
         else:
-            return {}
+            return False
 @admin.register(models.Question)
 class QuestinAdmin(admin.ModelAdmin):
     inlines = [RightAnswerInline, QuestionImageInline]  # , AnswerInline]
@@ -219,11 +225,11 @@ class QuestinAdmin(admin.ModelAdmin):
             'all': ['exam/style.css']
         }
 
-    def get_model_perms(self, request):
+    def has_module_permission(self, request):
         if request.user.is_superuser:
-            return super().get_queryset(request)
+            return True
         else:
-            return {}
+            return False
 
 @admin.register(models.Subject)
 class SubjectAdmin(GuardedModelAdmin):
@@ -322,11 +328,11 @@ class ExamAdmin(admin.ModelAdmin):
         }))
         return format_html('<a href="{}">{} results</a>', url, exam.exam.count())
 
-    def get_model_perms(self, request):
+    def has_module_permission(self, request):
         if request.user.is_superuser:
-            return super().get_queryset(request)
+            return True
         else:
-            return {}
+            return False
 
 
 class GradeFilter(admin.SimpleListFilter):
@@ -370,8 +376,8 @@ class ResultAdmin(admin.ModelAdmin):
     search_fields = ['title', 'subject', 'created_at']
     list_filter = ['exam', GradeFilter]
 
-    def get_model_perms(self, request):
+    def has_module_permission(self, request):
         if request.user.is_superuser:
-            return super().get_queryset(request)
+            return True
         else:
-            return {}
+            return False
