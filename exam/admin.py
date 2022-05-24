@@ -1,3 +1,4 @@
+from unittest import result
 from django.contrib import admin
 from django.db.models.aggregates import Count
 from django.db.models.query import QuerySet
@@ -275,11 +276,22 @@ class ExamQustionInline(admin.TabularInline):
 @admin.register(models.Exam)
 class ExamAdmin(admin.ModelAdmin):
     inlines = [ExamQustionInline]
-    list_display = ['title', 'subject', 'created_at', 'starts_at', 'ends_at']
+    list_display = ['title', 'subject', 'created_at', 'starts_at', 'ends_at', 'results_count']
     ordering = ['title', 'subject', 'created_at', 'starts_at']
     search_fields = ['title', 'subject', 'created_at']
     list_filter = ['subject', 'created_at']
     autocomplete_fields = ['subject']
+
+    @admin.display(ordering=[ 'results_count'])
+    def results_count(self, exam):
+        url = (
+                reverse('admin:exam_result_changelist')
+                + '?'
+                + urlencode({
+            'exam__id': str(exam.id)
+        }))
+        return format_html('<a href="{}">{} results</a>', url, exam.exam.count())
+
 
 
 class GradeFilter(admin.SimpleListFilter):
