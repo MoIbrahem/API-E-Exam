@@ -218,7 +218,7 @@ class QuestinAdmin(admin.ModelAdmin):
     list_filter = ['subject', 'chapter', 'difficulty', 'type']
     autocomplete_fields = ['answer', 'chapter','subject','type','difficulty']
     def answers(self, obj):
-        return "\n".join([answer.title for answer in obj.answer.all()])
+        return "\n / ".join([answer.title for answer in obj.answer.all()])
 
     class Media:
         css = {
@@ -231,6 +231,12 @@ class QuestinAdmin(admin.ModelAdmin):
         else:
             return False
 
+class QustionInline(admin.TabularInline):
+    autocomplete_fields = ['chapter', 'difficulty', 'type','answer']
+    extra = 1
+    model = models.Question
+    show_change_link: True
+
 @admin.register(models.Subject)
 class SubjectAdmin(GuardedModelAdmin):
 
@@ -241,6 +247,7 @@ class SubjectAdmin(GuardedModelAdmin):
     prepopulated_fields = {
         'slug': ['title']
     }
+    inlines = [QustionInline]
     autocomplete_fields = ['level', 'departments','chapters']
 
     def professors(self, obj):

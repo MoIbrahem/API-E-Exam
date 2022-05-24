@@ -100,7 +100,7 @@ class Type(models.Model):
 
 
 class Answer(models.Model):
-    title = models.CharField(max_length=255, verbose_name="Answer")
+    title = models.CharField(max_length=255, verbose_name="Answer",unique= True)
 
     def __str__(self) -> str:
         return self.title
@@ -125,7 +125,7 @@ class Question(models.Model):
 
 
 class RightAnswer(models.Model):
-    questions = models.ForeignKey(Question, on_delete=models.CASCADE)
+    questions = models.ForeignKey(Question, on_delete=models.CASCADE,related_name="rightanswers")
     answers = models.ManyToManyField(Answer)
     
 
